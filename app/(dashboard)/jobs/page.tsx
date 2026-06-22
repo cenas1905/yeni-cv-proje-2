@@ -15,6 +15,7 @@ export default function JobsPage() {
   // Preference form state
   const [city, setCity] = useState('İstanbul');
   const [workType, setWorkType] = useState('Uzaktan');
+  const [sector, setSector] = useState('');
 
   useEffect(() => {
     async function loadData() {
@@ -27,6 +28,7 @@ export default function JobsPage() {
         setPreferences(prefData);
         setCity(prefData.preferred_cities?.[0] || 'İstanbul');
         setWorkType(prefData.work_types?.[0] || 'Uzaktan');
+        setSector(prefData.job_title || '');
       }
 
       // Örnek iş ilanlarını yükle (Kendi veritabanımızdan)
@@ -37,7 +39,8 @@ export default function JobsPage() {
       // İnternetten gerçek ilanları çek (SerpApi - Eğer Key varsa)
       try {
         const prefCity = prefData?.preferred_cities?.[0] || 'Turkey';
-        const res = await fetch(`/api/jobs?location=${prefCity}`);
+        const queryTarget = sector ? sector : 'developer';
+        const res = await fetch(`/api/jobs?location=${prefCity}&query=${queryTarget}`);
         const externalData = await res.json();
         
         if (externalData.jobs && externalData.jobs.length > 0) {
@@ -63,6 +66,7 @@ export default function JobsPage() {
         user_id: user.id,
         preferred_cities: [city],
         work_types: [workType],
+        job_title: sector
       });
       if (!error) {
         alert('Tercihlerin başarıyla kaydedildi! Yapay zeka ilanları senin için taramaya devam edecek.');
@@ -109,6 +113,7 @@ export default function JobsPage() {
                   <option value="Ankara">Ankara</option>
                   <option value="İzmir">İzmir</option>
                   <option value="Antalya">Antalya</option>
+                  <option value="Turkey">Tüm Türkiye</option>
                   <option value="Remote">Sadece Yurt Dışı / Uzaktan</option>
                 </select>
               </div>
@@ -124,6 +129,17 @@ export default function JobsPage() {
                   <option value="Hibrit">Hibrit</option>
                   <option value="Ofis">Ofis</option>
                 </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-[#0b1c30] mb-1">Nasıl Bir Yerde / Hangi Alanda?</label>
+                <input 
+                  type="text"
+                  value={sector}
+                  onChange={(e) => setSector(e.target.value)}
+                  placeholder="Örn: Yazılım, Teknoloji, Mağaza..."
+                  className="w-full border border-[#c6c6cd] rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-[#0051d5] outline-none"
+                />
               </div>
 
               <button 
