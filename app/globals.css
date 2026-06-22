@@ -1,0 +1,187 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-sans);
+  --font-headline: var(--font-headline);
+  --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+}
+
+/* ─────────────────────────────────────────────
+   CVio Design System — Stitch Premium Light Theme
+   Background: #f8f9ff, Accents: #0051d5
+   Text: #0b1c30, Borders: #c6c6cd
+───────────────────────────────────────────── */
+:root {
+  --bg-primary:   #f8f9ff;
+  --bg-secondary: #eff4ff;
+  --bg-card:      #ffffff;
+  --bg-card-hover:#f1f5f9;
+  --border-subtle: rgba(11, 28, 48, 0.06);
+  --border-medium: rgba(11, 28, 48, 0.12);
+  --accent-indigo: #0051d5;
+  --accent-violet: #7073ff;
+  --accent-pink:   #ec4899;
+
+  /* Shadcn tokens — light theme */
+  --background:    #f8f9ff;
+  --foreground:    #0b1c30;
+  --card:          #ffffff;
+  --card-foreground: #0b1c30;
+  --popover:       #ffffff;
+  --popover-foreground: #0b1c30;
+  --primary:       #0051d5;
+  --primary-foreground: #ffffff;
+  --secondary:     #eff4ff;
+  --secondary-foreground: #45464d;
+  --muted:         #f1f5f9;
+  --muted-foreground: #76777d;
+  --accent:        #eff4ff;
+  --accent-foreground: #0b1c30;
+  --destructive:   #ef4444;
+  --border:        #c6c6cd;
+  --input:         #c6c6cd;
+  --ring:          #0051d5;
+  --radius:        0.75rem;
+  --chart-1: #0051d5;
+  --chart-2: #7073ff;
+  --chart-3: #ec4899;
+  --chart-4: #10b981;
+  --chart-5: #f59e0b;
+  --sidebar: #eff4ff;
+  --sidebar-foreground: #0b1c30;
+  --sidebar-primary: #0051d5;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #d3e4fe;
+  --sidebar-accent-foreground: #0b1c30;
+  --sidebar-border: #c6c6cd;
+  --sidebar-ring: #0051d5;
+}
+
+.dark {
+  --background: #f8f9ff;
+  --foreground: #0b1c30;
+  --card: #ffffff;
+  --card-foreground: #0b1c30;
+  --primary: #0051d5;
+  --primary-foreground: #ffffff;
+  --secondary: #eff4ff;
+  --secondary-foreground: #45464d;
+  --muted: #f1f5f9;
+  --muted-foreground: #76777d;
+  --border: #c6c6cd;
+  --input: #c6c6cd;
+}
+
+@layer base {
+  * { @apply border-border; }
+  body { 
+    @apply bg-background text-foreground; 
+    font-feature-settings: "rlig" 1, "calt" 1; 
+    background-image: 
+      radial-gradient(circle at 50% 0%, rgba(0, 81, 213, 0.05) 0%, transparent 65%),
+      radial-gradient(circle at 80% 80%, rgba(112, 115, 255, 0.03) 0%, transparent 55%),
+      radial-gradient(circle at 20% 80%, rgba(236, 72, 153, 0.01) 0%, transparent 45%),
+      radial-gradient(rgba(11, 28, 48, 0.015) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 100% 100%, 24px 24px;
+    background-attachment: fixed;
+  }
+  html { @apply font-sans; scroll-behavior: smooth; }
+
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: #f8f9ff; }
+  ::-webkit-scrollbar-thumb { background: #c6c6cd; border-radius: 5px; }
+  ::-webkit-scrollbar-thumb:hover { background: #0051d5; }
+
+  ::selection { background: rgba(0,81,213,0.15); color: #0b1c30; }
+}
+
+/* ─── Gradient text utility ─── */
+.gradient-text {
+  background: linear-gradient(135deg, #0051d5 0%, #7073ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-gold {
+  background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 50%, #fcd34d 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── Glass cards ─── */
+.glass-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 81, 213, 0.07);
+}
+
+/* ─── Grid dot pattern ─── */
+.dot-pattern {
+  background-image: radial-gradient(circle, rgba(0,81,213,0.06) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* ─── Glow animations ─── */
+@keyframes float { 0%,100% { transform: translateY(0px); } 50% { transform: translateY(-12px); } }
+@keyframes glow  { 0%,100% { opacity: 0.35; } 50% { opacity: 0.65; } }
+@keyframes shimmer { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
+@keyframes fadeInUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
+@keyframes pulse-ring { 0% { transform:scale(1); opacity:1; } 100% { transform:scale(1.5); opacity:0; } }
+
+.animate-float    { animation: float 6s ease-in-out infinite; }
+.animate-glow     { animation: glow 3s ease-in-out infinite; }
+.animate-shimmer  { background-size: 200% auto; animation: shimmer 3s linear infinite; }
+.animate-fade-up  { animation: fadeInUp 0.6s ease forwards; }
+.animate-pulse-ring { animation: pulse-ring 2s ease-out infinite; }
+
+@keyframes float-slow-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(40px, -60px) scale(1.15); }
+}
+@keyframes float-slow-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-50px, 40px) scale(1.2); }
+}
+.animate-float-slow-1 { animation: float-slow-1 15s ease-in-out infinite; }
+.animate-float-slow-2 { animation: float-slow-2 20s ease-in-out infinite; }
