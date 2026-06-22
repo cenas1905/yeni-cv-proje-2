@@ -39,7 +39,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     { href: '/dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" /> },
     { href: '/dashboard/cv/new', label: 'Yeni CV', icon: <Plus className="w-5 h-5" /> },
     { href: '/cover-letters', label: 'Motivasyon', icon: <FileText className="w-5 h-5" /> },
-    { href: '/dashboard/discover', label: 'İş Eşleştirme', icon: <Brain className="w-5 h-5" /> },
+    { href: '/dashboard/jobs', label: 'İş Fırsatlarım', icon: <Briefcase className="w-5 h-5" /> },
     { href: '/settings', label: 'Ayarlar', icon: <Settings className="w-5 h-5" /> },
   ];
 
@@ -66,8 +66,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
               <Link href="/dashboard/cv/new" className="text-[#45464d] font-medium text-sm hover:text-[#0051d5] transition-colors h-full flex items-center">
                 CV Oluştur
               </Link>
-              <Link href="/dashboard/discover" className="text-[#45464d] font-medium text-sm hover:text-[#0051d5] transition-colors h-full flex items-center">
-                İş Eşleştirme
+              <Link href="/dashboard/jobs" className="text-[#45464d] font-medium text-sm hover:text-[#0051d5] transition-colors h-full flex items-center">
+                İş Fırsatlarım
               </Link>
             </nav>
           </div>

@@ -44,13 +44,46 @@ const getGlobalStore = () => {
   g.mockSubscriptionStore = g.mockSubscriptionStore || {};
   g.mockCoverLettersStore = g.mockCoverLettersStore || {};
   g.mockCVViewsStore = g.mockCVViewsStore || {};
+  g.mockJobPreferencesStore = g.mockJobPreferencesStore || {};
+  g.mockEmployerJobsStore = g.mockEmployerJobsStore || {
+    'job-1': {
+      id: 'job-1',
+      employer_user_id: 'emp-123',
+      company_name: 'TechFlow A.Ş.',
+      job_title: 'Senior Frontend Developer',
+      location: 'İstanbul / Uzaktan',
+      work_type: 'Uzaktan',
+      salary_range: '80.000 TL - 120.000 TL',
+      description: 'Modern web uygulamaları geliştirecek React ve Next.js uzmanı arıyoruz.',
+      requirements: ['React', 'Next.js', 'TypeScript', '3+ yıl tecrübe'],
+      is_active: true,
+      created_at: new Date().toISOString()
+    },
+    'job-2': {
+      id: 'job-2',
+      employer_user_id: 'emp-456',
+      company_name: 'DataCorp Türkiye',
+      job_title: 'Full Stack Engineer',
+      location: 'Ankara',
+      work_type: 'Hibrit',
+      salary_range: '70.000 TL - 100.000 TL',
+      description: 'Backend ve Frontend süreçlerine hakim yazılım mühendisi.',
+      requirements: ['Node.js', 'React', 'PostgreSQL', 'Git'],
+      is_active: true,
+      created_at: new Date().toISOString()
+    }
+  };
+  g.mockJobApplicationsStore = g.mockJobApplicationsStore || {};
 
   return {
     cvs: g.mockCVStore,
     profiles: g.mockProfileStore,
     subscriptions: g.mockSubscriptionStore,
     cover_letters: g.mockCoverLettersStore,
-    cv_views: g.mockCVViewsStore
+    cv_views: g.mockCVViewsStore,
+    job_preferences: g.mockJobPreferencesStore,
+    employer_jobs: g.mockEmployerJobsStore,
+    job_applications: g.mockJobApplicationsStore
   };
 };
 
@@ -266,6 +299,40 @@ export async function executeMockQuery(
     if (operation === 'select') {
       const views = Object.values(store.cv_views).filter((v: any) => v.cv_id === filters?.cv_id);
       return { data: views, error: null };
+    }
+  }
+  if (table === 'job_preferences') {
+    if (operation === 'upsert' || operation === 'update' || operation === 'insert') {
+      const pId = data?.user_id || MOCK_USER.id;
+      const pref = { id: pId, user_id: pId, ...data };
+      store.job_preferences[pId] = pref;
+      return { data: pref, error: null };
+    }
+    if (operation === 'select') {
+      const pId = filters?.user_id || MOCK_USER.id;
+      return isSingle ? { data: store.job_preferences[pId] || null, error: null } : { data: store.job_preferences[pId] ? [store.job_preferences[pId]] : [], error: null };
+    }
+  }
+
+  if (table === 'employer_jobs') {
+    if (operation === 'insert') {
+      const job = { id: `job-${Date.now()}`, ...data, created_at: new Date().toISOString() };
+      store.employer_jobs[job.id] = job;
+      return { data: job, error: null };
+    }
+    if (operation === 'select') {
+      return { data: Object.values(store.employer_jobs), error: null };
+    }
+  }
+
+  if (table === 'job_applications') {
+    if (operation === 'insert') {
+      const app = { id: `app-${Date.now()}`, ...data, created_at: new Date().toISOString() };
+      store.job_applications[app.id] = app;
+      return { data: app, error: null };
+    }
+    if (operation === 'select') {
+      return { data: Object.values(store.job_applications), error: null };
     }
   }
 
