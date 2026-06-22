@@ -57,6 +57,7 @@ const getGlobalStore = () => {
       description: 'Modern web uygulamaları geliştirecek React ve Next.js uzmanı arıyoruz.',
       requirements: ['React', 'Next.js', 'TypeScript', '3+ yıl tecrübe'],
       is_active: true,
+      source: 'CVio (Direkt İlan)',
       created_at: new Date().toISOString()
     },
     'job-2': {
@@ -70,6 +71,21 @@ const getGlobalStore = () => {
       description: 'Backend ve Frontend süreçlerine hakim yazılım mühendisi.',
       requirements: ['Node.js', 'React', 'PostgreSQL', 'Git'],
       is_active: true,
+      source: 'İŞKUR',
+      created_at: new Date().toISOString()
+    },
+    'job-3': {
+      id: 'job-3',
+      employer_user_id: 'emp-789',
+      company_name: 'Global Yazılım Evi',
+      job_title: 'React Native Geliştirici',
+      location: 'İzmir',
+      work_type: 'Ofis',
+      salary_range: 'Belirtilmemiş',
+      description: 'Mobil uygulama projemiz için deneyimli geliştirici arıyoruz.',
+      requirements: ['React Native', 'Mobil', 'iOS/Android'],
+      is_active: true,
+      source: 'LinkedIn',
       created_at: new Date().toISOString()
     }
   };

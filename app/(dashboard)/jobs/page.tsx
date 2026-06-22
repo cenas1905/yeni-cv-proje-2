@@ -183,7 +183,14 @@ export default function JobsPage() {
                     </div>
                     <div>
                       <h3 className="font-bold text-lg text-[#0b1c30] pr-20">{job.job_title}</h3>
-                      <p className="text-sm font-medium text-[#45464d] mt-0.5">{job.company_name}</p>
+                      <p className="text-sm font-medium text-[#45464d] mt-0.5 flex items-center gap-2">
+                        {job.company_name}
+                        {job.source && (
+                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-blue-100 text-blue-800">
+                            Kaynak: {job.source}
+                          </span>
+                        )}
+                      </p>
                       
                       <div className="flex flex-wrap items-center gap-3 mt-3">
                         <span className="flex items-center gap-1.5 text-xs font-semibold text-[#76777d] bg-[#f8f9ff] px-2.5 py-1 rounded-md border border-[#e5e7eb]">
