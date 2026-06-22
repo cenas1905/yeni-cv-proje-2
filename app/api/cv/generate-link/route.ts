@@ -53,8 +53,10 @@ export async function POST(req: Request) {
       return Response.json({ error: error.message }, { status: 500 });
     }
     
+    const origin = req.headers.get('origin') || process.env.NEXT_PUBLIC_URL || 'http://localhost:3000';
+    
     return Response.json({
-      link: `${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/cv/${slug}`,
+      link: `${origin}/cv/${slug}`,
       expiresAt: linkExpiresAt,
       isPermanent: isPro
     });
