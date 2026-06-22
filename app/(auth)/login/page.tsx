@@ -82,27 +82,13 @@ export default function LoginPage() {
               ))}
             </div>
 
-            {/* Floating CV preview card */}
-            <div className="p-5 rounded-2xl bg-white/70 backdrop-blur-xl border border-[#c6c6cd]/30 shadow-lg mt-8">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-8 h-8 rounded-lg bg-[#0051d5]/10 flex items-center justify-center">
-                  <span className="text-lg">🎯</span>
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-[#0b1c30]">Teknoloji Şirketi — Senior Frontend</p>
-                  <p className="text-[10px] text-emerald-600 font-semibold">✓ AI optimize edildi</p>
-                </div>
-              </div>
-              <div className="space-y-1.5">
-                {[90, 75, 60].map((w, i) => (
-                  <div key={i} className="h-2 rounded-full bg-[#0051d5]/15" style={{ width: `${w}%` }} />
-                ))}
-              </div>
-              <div className="flex items-center gap-2 mt-3 text-xs text-[#76777d]">
-                <span className="text-[#0051d5] font-semibold">👁 523 görüntülenme</span>
-                <span>·</span>
-                <span className="font-mono">cvio.app/cv/cem-tasarim</span>
-              </div>
+            {/* Sizin bahsettiğiniz görsel buraya eklendi */}
+            <div className="mt-8 relative rounded-2xl overflow-hidden shadow-2xl border border-[#c6c6cd]/40">
+              <img 
+                src="/hero_office.png" 
+                alt="CVio Platform" 
+                className="w-full h-auto object-cover hover:scale-105 transition-transform duration-700"
+              />
             </div>
           </div>
 
