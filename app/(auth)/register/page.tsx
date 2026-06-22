@@ -115,32 +115,35 @@ export default function RegisterPage() {
     <div className="min-h-screen bg-[#f8f9ff] flex" style={{ fontFamily: 'Inter, sans-serif' }}>
 
       {/* ── Left panel ── */}
-      <div className="hidden lg:flex w-1/2 flex-col relative overflow-hidden bg-gradient-to-br from-[#eff4ff] to-[#dce9ff] border-r border-[#c6c6cd]/30">
-        <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, #7073ff 1px, transparent 0)', backgroundSize: '24px 24px' }} />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-[#7073ff]/10 blur-3xl pointer-events-none" />
+      <div className="hidden lg:flex w-1/2 flex-col relative overflow-hidden">
+        {/* Full Cover Image Background */}
+        <div className="absolute inset-0 z-0">
+          <img src="/hero_office.png" alt="CVio Office" className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px]" />
+        </div>
 
-        <div className="relative z-10 flex flex-col h-full p-12">
+        <div className="relative z-10 flex flex-col h-full p-12 text-white">
           <Link href="/" className="flex items-center gap-2.5 mb-auto">
             <div className="w-8 h-8 rounded-lg bg-[#0051d5] flex items-center justify-center">
               <Sparkles className="w-4 h-4 text-white" />
             </div>
-            <span className="font-bold text-xl text-[#0b1c30]">CV<span className="text-[#0051d5]">io</span></span>
+            <span className="font-bold text-xl text-white">CV<span className="text-blue-300">io</span></span>
           </Link>
 
           <div className="mb-auto space-y-6 max-w-md">
-            <h2 className="text-4xl font-bold leading-tight text-[#0b1c30]">
+            <h2 className="text-4xl font-bold leading-tight text-white drop-shadow-md">
               Kariyer yolculuğunuz<br />
-              <span className="text-[#7073ff]">bugün başlıyor</span>
+              <span className="text-blue-300">bugün başlıyor</span>
             </h2>
 
-            <div className="space-y-3">
+            <div className="space-y-3 bg-black/20 p-6 rounded-2xl backdrop-blur-md border border-white/10">
               {[
                 { icon: '✅', text: 'Ücretsiz — kredi kartı gerekmez' },
                 { icon: '⚡', text: 'Dakikalar içinde profesyonel CV hazırlama' },
                 { icon: '🎯', text: 'ATS geçiş garantili AI içerik optimizasyonu' },
                 { icon: '🔗', text: 'Paylaşılabilir dijital kariyer linki' },
               ].map(item => (
-                <div key={item.text} className="flex items-center gap-3 text-[#45464d] text-sm">
+                <div key={item.text} className="flex items-center gap-3 text-white/90 text-sm font-medium">
                   <span className="text-lg">{item.icon}</span>
                   {item.text}
                 </div>
@@ -155,15 +158,15 @@ export default function RegisterPage() {
                 { v: '60sn', l: 'Oluşturma süresi' },
                 { v: '4.9★', l: 'Puan' },
               ].map(s => (
-                <div key={s.l} className="p-3 rounded-xl bg-white/70 backdrop-blur-xl border border-[#c6c6cd]/30 shadow-sm">
-                  <div className="text-xl font-bold text-[#0051d5]">{s.v}</div>
-                  <div className="text-xs text-[#76777d] mt-0.5">{s.l}</div>
+                <div key={s.l} className="p-3 rounded-xl bg-black/30 backdrop-blur-md border border-white/10 shadow-sm">
+                  <div className="text-xl font-bold text-blue-300">{s.v}</div>
+                  <div className="text-xs text-white/70 mt-0.5 font-medium">{s.l}</div>
                 </div>
               ))}
             </div>
           </div>
 
-          <p className="text-xs text-[#76777d]">© {new Date().getFullYear()} CVio</p>
+          <p className="text-xs text-white/60 drop-shadow-sm">© {new Date().getFullYear()} CVio</p>
         </div>
       </div>
 

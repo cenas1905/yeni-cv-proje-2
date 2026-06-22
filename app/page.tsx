@@ -163,59 +163,62 @@ export default function HomePage() {
       </header>
 
       {/* ─── HERO ─── */}
-      <section className="relative pt-16 pb-24 md:pt-24 md:pb-32 px-6 md:px-16 max-w-[1280px] mx-auto overflow-hidden">
-        {/* Subtle background gradient */}
-        <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-bl from-[#4648d4]/5 to-transparent -z-10 rounded-bl-full pointer-events-none" />
+      <section className="relative pt-16 pb-24 md:pt-24 md:pb-32 px-6 md:px-16 overflow-hidden">
+        {/* Background Image & Overlay */}
+        <div className="absolute inset-0 z-0">
+          <img src="/main_hero_bg.png" alt="CVio Hero Background" className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-[4px]" />
+        </div>
 
-        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
+        <div className="relative z-10 max-w-[1280px] mx-auto flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
           {/* Left content */}
           <motion.div
-            className="flex-1 z-10"
+            className="flex-1"
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#4648d4]/10 text-[#4648d4] mb-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 text-blue-200 border border-white/20 mb-6 backdrop-blur-md">
               <Sparkles className="w-4 h-4" />
               <span className="text-xs font-bold uppercase tracking-wider">Next-Gen Kariyer Araçları</span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-[#191c1e] leading-[1.08] tracking-tight mb-6">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-white leading-[1.08] tracking-tight mb-6 drop-shadow-lg">
               AI Destekli <br />
-              <span className="text-[#4648d4] relative">
+              <span className="text-blue-400 relative">
                 Kariyer Yönetimi
-                <svg className="absolute w-full h-3 -bottom-1 left-0 text-[#4648d4]/30" fill="none" viewBox="0 0 200 9" xmlns="http://www.w3.org/2000/svg">
+                <svg className="absolute w-full h-3 -bottom-1 left-0 text-blue-400/50" fill="none" viewBox="0 0 200 9" xmlns="http://www.w3.org/2000/svg">
                   <path d="M2.00035 7.15585C46.8529 2.45391 100.865 -1.02636 198.053 6.94042" stroke="currentColor" strokeLinecap="round" strokeWidth="3" />
                 </svg>
               </span>
             </h1>
 
-            <p className="text-lg text-[#45464d] mb-10 max-w-xl leading-relaxed">
+            <p className="text-lg text-white/80 mb-10 max-w-xl leading-relaxed drop-shadow-md">
               LinkedIn profilinizi ATS uyumlu, iş ilanına özel bir CV'ye dönüştürün. Claude AI'nın gücüyle dakikalar içinde işe alım görevlilerini etkileyin.
             </p>
 
             {/* LinkedIn URL input */}
-            <form onSubmit={handleHeroSubmit} className="bg-white p-2 rounded-xl shadow-sm border border-[#c6c6cd]/30 flex flex-col sm:flex-row gap-2 max-w-2xl">
+            <form onSubmit={handleHeroSubmit} className="bg-white/10 backdrop-blur-xl p-2 rounded-xl shadow-2xl border border-white/20 flex flex-col sm:flex-row gap-2 max-w-2xl">
               <div className="flex-1 relative flex items-center">
-                <Link2 className="absolute left-4 text-[#45464d] w-5 h-5 shrink-0" />
+                <Link2 className="absolute left-4 text-white/60 w-5 h-5 shrink-0" />
                 <input
                   type="url"
                   value={linkedInUrl}
                   onChange={(e) => setLinkedInUrl(e.target.value)}
                   placeholder="LinkedIn profil URL'nizi yapıştırın..."
-                  className="w-full pl-12 pr-4 py-4 rounded-lg border-none focus:ring-2 focus:ring-[#4648d4]/50 bg-transparent text-[#191c1e] placeholder-[#76777d] text-sm outline-none"
+                  className="w-full pl-12 pr-4 py-4 rounded-lg border-none focus:ring-2 focus:ring-blue-400/50 bg-transparent text-white placeholder-white/60 text-sm outline-none"
                 />
               </div>
               <button
                 type="submit"
-                className="bg-gradient-to-r from-[#4648d4] to-[#009485] hover:opacity-90 text-white font-semibold text-sm px-8 py-4 rounded-lg flex items-center justify-center gap-2 transition-all whitespace-nowrap group"
+                className="bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm px-8 py-4 rounded-lg flex items-center justify-center gap-2 transition-all whitespace-nowrap shadow-lg group"
               >
                 <Sparkles className="w-4 h-4 group-hover:rotate-12 transition-transform" />
                 CV'ye Dönüştür
               </button>
             </form>
-            <p className="text-xs text-[#76777d] mt-3">Kredi kartı gerekmez · 7 günlük ücretsiz deneme</p>
+            <p className="text-xs text-white/60 mt-3 drop-shadow-sm">Kredi kartı gerekmez · Ücretsiz deneme</p>
           </motion.div>
 
           {/* Right: Floating CV mockup */}
@@ -225,10 +228,10 @@ export default function HomePage() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.15 }}
           >
-            <div className="absolute inset-0 bg-gradient-to-tr from-[#4648d4]/10 to-[#009485]/10 rounded-full blur-3xl opacity-50" />
-            <div className="relative w-full max-w-md h-[400px] bg-white rounded-2xl shadow-lg border border-[#c6c6cd]/20 p-6 flex flex-col gap-4 overflow-hidden">
+            <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-3xl opacity-50" />
+            <div className="relative w-full max-w-md h-[400px] bg-white/90 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 p-6 flex flex-col gap-4 overflow-hidden">
               {/* Skeleton CV */}
-              <div className="flex items-start gap-4 pb-4 border-b border-[#c6c6cd]/20">
+              <div className="flex items-start gap-4 pb-4 border-b border-[#c6c6cd]/30">
                 <div className="w-14 h-14 rounded-full bg-[#eceef0] animate-pulse" />
                 <div className="flex-1 space-y-2">
                   <div className="h-5 w-3/4 bg-[#eceef0] rounded animate-pulse" />
@@ -236,21 +239,21 @@ export default function HomePage() {
                 </div>
               </div>
               <div className="space-y-4 pt-2">
-                <div className="h-3.5 w-1/3 bg-[#4648d4]/20 rounded animate-pulse" />
+                <div className="h-3.5 w-1/3 bg-blue-500/20 rounded animate-pulse" />
                 <div className="space-y-2">
                   <div className="h-3 w-full bg-[#eceef0] rounded animate-pulse" />
                   <div className="h-3 w-5/6 bg-[#eceef0] rounded animate-pulse" />
                   <div className="h-3 w-4/6 bg-[#eceef0] rounded animate-pulse" />
                 </div>
-                <div className="h-3.5 w-1/3 bg-[#4648d4]/20 rounded animate-pulse" />
+                <div className="h-3.5 w-1/3 bg-blue-500/20 rounded animate-pulse" />
                 <div className="space-y-2">
                   <div className="h-3 w-full bg-[#eceef0] rounded animate-pulse" />
                   <div className="h-3 w-4/6 bg-[#eceef0] rounded animate-pulse" />
                 </div>
               </div>
               {/* Floating AI badge */}
-              <div className="absolute bottom-6 right-6 bg-white/80 backdrop-blur-md px-3 py-2 rounded-full flex items-center gap-2 shadow-lg border border-[#4648d4]/20 animate-bounce" style={{ animationDuration: '3s' }}>
-                <Sparkles className="w-3.5 h-3.5 text-[#4648d4]" />
+              <div className="absolute bottom-6 right-6 bg-white/90 backdrop-blur-md px-3 py-2 rounded-full flex items-center gap-2 shadow-lg border border-blue-500/20 animate-bounce" style={{ animationDuration: '3s' }}>
+                <Sparkles className="w-3.5 h-3.5 text-blue-600" />
                 <span className="text-xs font-semibold text-[#191c1e]">AI Optimize Ediliyor...</span>
               </div>
             </div>
