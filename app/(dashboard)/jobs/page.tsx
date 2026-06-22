@@ -29,10 +29,27 @@ export default function JobsPage() {
         setWorkType(prefData.work_types?.[0] || 'Uzaktan');
       }
 
-      // Örnek iş ilanlarını yükle
+      // Örnek iş ilanlarını yükle (Kendi veritabanımızdan)
       const { data: jobsData } = await supabase.from('employer_jobs').select('*');
-      if (jobsData) setJobs(jobsData);
+      
+      let allJobs = jobsData || [];
 
+      // İnternetten gerçek ilanları çek (SerpApi - Eğer Key varsa)
+      try {
+        const prefCity = prefData?.preferred_cities?.[0] || 'Turkey';
+        const res = await fetch(`/api/jobs?location=${prefCity}`);
+        const externalData = await res.json();
+        
+        if (externalData.jobs && externalData.jobs.length > 0) {
+          allJobs = [...allJobs, ...externalData.jobs];
+        } else if (externalData.error) {
+          console.warn('Dış API Uyarısı:', externalData.message);
+        }
+      } catch (err) {
+        console.error('İlan çekme hatası', err);
+      }
+
+      setJobs(allJobs);
       setLoading(false);
     }
     loadData();
