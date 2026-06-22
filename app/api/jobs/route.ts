@@ -5,7 +5,7 @@ export async function GET(request: Request) {
   const location = searchParams.get('location') || 'Turkey';
   const query = searchParams.get('query') || 'developer';
 
-  const SERPAPI_KEY = process.env.SERPAPI_KEY;
+  const SERPAPI_KEY = process.env.SERPAPI_KEY || 'a479cfaa5c9a319cd5c55bac9ebd8103425fcb26df0aa3308b716e0eed17fedc';
 
   if (!SERPAPI_KEY) {
     // API anahtarı yoksa kullanıcıyı bilgilendirmek için uyarı döndür
