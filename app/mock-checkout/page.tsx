@@ -21,9 +21,8 @@ function MockCheckoutContent() {
   const [expiry, setExpiry] = useState('');
   const [cvc, setCvc] = useState('');
 
-  const isAnnual = planType === 'annual';
-  const price = isAnnual ? '₺1.490,00' : '₺199,00';
-  const period = isAnnual ? '/yıl' : '/ay';
+  const price = '₺300,00';
+  const period = '/ay';
 
   // Format card number like 0000 0000 0000 0000
   const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -100,7 +99,7 @@ function MockCheckoutContent() {
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="font-bold text-[#0b1c30] text-lg">CVio Pro</h3>
-                  <p className="text-[#5c5d64] text-sm mt-0.5">{isAnnual ? 'Yıllık Plan (Tasarruf %25)' : 'Aylık Plan'}</p>
+                  <p className="text-[#5c5d64] text-sm mt-0.5">Aylık Plan</p>
                 </div>
                 <div className="text-right">
                   <div className="text-2xl font-black text-[#0b1c30]">{price}</div>

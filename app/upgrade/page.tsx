@@ -26,8 +26,7 @@ function UpgradeContent() {
   const slug = searchParams.get('slug');
   const supabase = createClientComponentClient();
   const [userId, setUserId] = useState<string | null>(null);
-  const [loading, setLoading] = useState<string | null>(null);
-  const [billing, setBilling] = useState<'monthly' | 'annual'>('annual');
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -44,7 +43,7 @@ function UpgradeContent() {
     fetchUser();
   }, [supabase]);
 
-  const handleUpgrade = async (planType: 'monthly' | 'annual') => {
+  const handleUpgrade = async () => {
     let currentUserId = userId;
     
     // On-demand session check as fallback if state userId is null
@@ -61,27 +60,23 @@ function UpgradeContent() {
       return;
     }
 
-    setLoading(planType);
+    setLoading(true);
     try {
       const res = await fetch('/api/stripe/create-checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ planType, userId: currentUserId, returnUrl: window.location.origin + '/upgrade' })
+        body: JSON.stringify({ planType: 'monthly', userId: currentUserId, returnUrl: window.location.origin + '/upgrade' })
       });
       const data = await res.json();
       if (data.url) window.location.href = data.url;
     } catch {
       alert('Ödeme başlatılamadı, lütfen tekrar deneyin.');
     } finally {
-      setLoading(null);
+      setLoading(false);
     }
   };
 
-  const monthlyPrice = 199;
-  const annualTotal = 1490;
-  const annualMonthly = Math.round(annualTotal / 12);
-  const savings = Math.round((1 - annualTotal / (monthlyPrice * 12)) * 100);
-  const currentPrice = billing === 'annual' ? annualMonthly : monthlyPrice;
+  const currentPrice = 300;
 
   return (
     <div className="min-h-screen bg-[#f8f9ff] text-[#0b1c30] font-sans selection:bg-[#0051d5] selection:text-white">
@@ -119,35 +114,8 @@ function UpgradeContent() {
             Kariyerinize <span className="text-[#0051d5]">yatırım yapın.</span>
           </h1>
           <p className="text-[#45464d] text-base max-w-md mx-auto font-medium">
-            Tek bir başarılı iş görüşmesi, yıllık üyelik ücretini fazlasıyla karşılar.
+            Tek bir başarılı iş görüşmesi, üyelik ücretini fazlasıyla karşılar.
           </p>
-        </div>
-
-        {/* Billing Toggle */}
-        <div className="flex justify-center mb-10">
-          <div className="flex p-1.5 rounded-xl border border-[#c6c6cd] bg-white shadow-sm">
-            <button
-              onClick={() => setBilling('monthly')}
-              className={`px-5 py-2 rounded-lg text-[13px] font-bold transition-all ${
-                billing === 'monthly' ? 'bg-[#0051d5] text-white shadow-sm' : 'text-[#45464d] hover:text-[#0051d5]'
-              }`}
-            >
-              Aylık Ödeme
-            </button>
-            <button
-              onClick={() => setBilling('annual')}
-              className={`px-5 py-2 rounded-lg text-[13px] font-bold transition-all flex items-center gap-2 ${
-                billing === 'annual' ? 'bg-[#0051d5] text-white shadow-sm' : 'text-[#45464d] hover:text-[#0051d5]'
-              }`}
-            >
-              Yıllık Ödeme
-              <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                billing === 'annual' ? 'bg-white/25 text-white' : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
-              }`}>
-                %{savings} Tasarruf
-              </span>
-            </button>
-          </div>
         </div>
 
         {/* Main Pricing Card */}
@@ -160,17 +128,12 @@ function UpgradeContent() {
                 <span className="text-5xl font-black text-[#0b1c30]">₺{currentPrice}</span>
                 <span className="text-[#45464d] text-sm font-semibold">/ay</span>
               </div>
-              {billing === 'annual' && (
-                <p className="text-[13px] font-semibold text-emerald-600 mt-2">
-                  ₺{annualTotal}/yıl faturalandırılır · ₺{monthlyPrice * 12 - annualTotal} kazançlı çıkın
-                </p>
-              )}
             </div>
 
             {/* CTA */}
             <button
-              onClick={() => handleUpgrade(billing)}
-              disabled={loading !== null}
+              onClick={handleUpgrade}
+              disabled={loading}
               className="w-full py-4 rounded-xl bg-[#0051d5] text-white font-bold text-[14px] hover:bg-[#316bf3] active:scale-98 transition-all disabled:opacity-75 flex items-center justify-center gap-2 mb-8 shadow-md shadow-[#0051d5]/20 cursor-pointer"
             >
               {loading ? (

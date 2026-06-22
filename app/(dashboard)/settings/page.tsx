@@ -77,7 +77,7 @@ export default async function SettingsPage() {
                 <div className="flex items-center space-x-3 text-[#45464d] text-sm">
                   <CreditCard className="w-4 h-4 text-emerald-500" />
                   <span>
-                    <strong>Aktif Plan:</strong> {profile.plan === 'annual' ? 'Yıllık Pro Plan' : 'Aylık Pro Plan'}
+                    <strong>Aktif Plan:</strong> Pro Plan
                   </span>
                 </div>
                 {profile.plan_expires_at && (
@@ -111,7 +111,7 @@ export default async function SettingsPage() {
             ) : (
               <Link href="/upgrade">
                 <Button className="bg-[#0051d5] hover:bg-[#0051d5]/90 text-white font-bold text-xs">
-                  Aylık ₺199 ile Pro'ya Yükselt
+                  Aylık ₺300 ile Pro'ya Yükselt
                 </Button>
               </Link>
             )}

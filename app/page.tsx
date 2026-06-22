@@ -33,7 +33,7 @@ const plans = [
   },
   {
     name: 'Pro',
-    price: '₺199',
+    price: '₺300',
     period: '/ay',
     desc: 'Ciddi iş arayanlar için',
     features: [

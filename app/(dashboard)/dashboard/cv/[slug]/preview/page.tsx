@@ -340,7 +340,7 @@ export default function PreviewCVPage({ params }: PreviewCVPageProps) {
                       </div>
                       <Link href="/upgrade">
                         <Button size="sm" className="bg-[#0051d5] hover:bg-[#316bf3] text-white font-bold text-xs mt-2 shadow-sm shadow-[#0051d5]/20">
-                          Aylık ₺199'a Abone Ol
+                          Aylık ₺300'a Abone Ol
                         </Button>
                       </Link>
                     </div>
@@ -372,7 +372,7 @@ export default function PreviewCVPage({ params }: PreviewCVPageProps) {
                     </div>
                     <Link href="/upgrade">
                       <Button size="sm" className="bg-[#0051d5] hover:bg-[#316bf3] text-white font-bold text-xs mt-2 shadow-sm shadow-[#0051d5]/20">
-                        Aylık ₺199'a Abone Ol
+                        Aylık ₺300'a Abone Ol
                       </Button>
                     </Link>
                   </CardContent>
