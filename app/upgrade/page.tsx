@@ -27,6 +27,7 @@ function UpgradeContent() {
   const supabase = createClientComponentClient();
   const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'annual'>('monthly');
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -65,7 +66,11 @@ function UpgradeContent() {
       const res = await fetch('/api/stripe/create-checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ planType: 'monthly', userId: currentUserId, returnUrl: window.location.origin + '/upgrade' })
+        body: JSON.stringify({ 
+          planType: billingPeriod, 
+          userId: currentUserId, 
+          returnUrl: window.location.origin + '/upgrade' 
+        })
       });
       const data = await res.json();
       if (data.url) window.location.href = data.url;
@@ -76,7 +81,9 @@ function UpgradeContent() {
     }
   };
 
-  const currentPrice = 300;
+  const isAnnual = billingPeriod === 'annual';
+  const displayPrice = isAnnual ? '₺2.400' : '₺300';
+  const displayPeriod = isAnnual ? '/yıl' : '/ay';
 
   return (
     <div className="min-h-screen bg-[#f8f9ff] text-[#0b1c30] font-sans selection:bg-[#0051d5] selection:text-white">
@@ -106,7 +113,7 @@ function UpgradeContent() {
         </Link>
 
         {/* Header */}
-        <div className="text-center space-y-4 mb-12">
+        <div className="text-center space-y-4 mb-10">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#c6c6cd] bg-white text-[12px] font-bold text-[#0051d5] shadow-sm">
             <Zap className="w-3.5 h-3.5 fill-current" /> CVio Pro
           </div>
@@ -118,16 +125,39 @@ function UpgradeContent() {
           </p>
         </div>
 
+        {/* Billing Selector Toggle */}
+        <div className="flex justify-center items-center gap-4 mb-8">
+          <span className={`text-sm font-semibold transition-colors ${!isAnnual ? 'text-[#0b1c30]' : 'text-[#76777d]'}`}>Aylık</span>
+          <button 
+            onClick={() => setBillingPeriod(isAnnual ? 'monthly' : 'annual')}
+            className="w-12 h-6 rounded-full bg-[#e2e8f0] p-0.5 transition-colors duration-200 focus:outline-none relative border border-[#cbd5e1] cursor-pointer"
+          >
+            <div className={`w-5 h-5 rounded-full bg-[#0051d5] shadow-sm transform transition-transform duration-200 ${isAnnual ? 'translate-x-6' : 'translate-x-0'}`}></div>
+          </button>
+          <div className="flex items-center gap-2">
+            <span className={`text-sm font-semibold transition-colors ${isAnnual ? 'text-[#0b1c30]' : 'text-[#76777d]'}`}>Yıllık</span>
+            <span className="px-2 py-0.5 text-[10px] font-extrabold text-[#0051d5] bg-[#eff4ff] border border-[#0051d5]/20 rounded-full">%33 İndirim</span>
+          </div>
+        </div>
+
         {/* Main Pricing Card */}
         <div className="max-w-lg mx-auto mb-12">
-          <div className="rounded-2xl border border-[#c6c6cd] bg-white p-8 sm:p-10 shadow-md">
+          <div className="rounded-2xl border border-[#c6c6cd] bg-white p-8 sm:p-10 shadow-md relative overflow-hidden">
+            {isAnnual && (
+              <div className="absolute top-0 right-0 bg-[#0051d5] text-white text-[10px] font-extrabold px-3 py-1 rounded-bl-xl uppercase tracking-wider">En Avantajlı</div>
+            )}
             
             {/* Price */}
             <div className="mb-8 text-center sm:text-left">
               <div className="flex items-baseline justify-center sm:justify-start gap-2">
-                <span className="text-5xl font-black text-[#0b1c30]">₺{currentPrice}</span>
-                <span className="text-[#45464d] text-sm font-semibold">/ay</span>
+                <span className="text-5xl font-black text-[#0b1c30]">{displayPrice}</span>
+                <span className="text-[#45464d] text-sm font-semibold">{displayPeriod}</span>
               </div>
+              {isAnnual && (
+                <div className="text-[12px] text-emerald-600 font-bold mt-1 text-center sm:text-left">
+                  Yıllık faturalandırılır (Aylık ₺200'ye denk gelir)
+                </div>
+              )}
             </div>
 
             {/* CTA */}
@@ -139,7 +169,7 @@ function UpgradeContent() {
               {loading ? (
                 <><Loader2 className="w-4 h-4 animate-spin" /> Güvenli Ödeme Sayfasına Yönlendiriliyorsunuz...</>
               ) : (
-                <>Pro Üyeliğe Geç — ₺{currentPrice}/ay</>
+                <>Pro Üyeliğe Geç — {displayPrice}{displayPeriod}</>
               )}
             </button>
 
