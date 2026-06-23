@@ -9,31 +9,65 @@ import { motion } from 'framer-motion';
 export default function PublicJobsPage() {
   const supabase = createClientComponentClient();
   const [jobs, setJobs] = useState<any[]>([]);
+  const [externalJobs, setExternalJobs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isSearching, setIsSearching] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [workTypeFilter, setWorkTypeFilter] = useState('Tümü');
 
   useEffect(() => {
-    async function fetchJobs() {
-      // Fetch public jobs
+    async function fetchLocalJobs() {
+      // Fetch internal jobs
       const { data } = await supabase
         .from('employer_jobs')
         .select('*')
         .order('created_at', { ascending: false });
       
       setJobs(data || []);
-      setLoading(false);
+      
+      // Fetch initial external jobs
+      fetchExternalJobs('Genel Başvuru', 'Turkey');
     }
-    fetchJobs();
+    fetchLocalJobs();
   }, [supabase]);
 
-  // Filter jobs based on search term and work type
-  const filteredJobs = jobs.filter(job => {
+  const fetchExternalJobs = async (query: string, location: string) => {
+    setIsSearching(true);
+    try {
+      const res = await fetch(`/api/jobs?location=${encodeURIComponent(location)}&query=${encodeURIComponent(query)}`);
+      const data = await res.json();
+      if (data.jobs) {
+        setExternalJobs(data.jobs);
+      }
+    } catch (error) {
+      console.error('Dış ilan çekilemedi', error);
+    }
+    setIsSearching(false);
+    setLoading(false);
+  };
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!searchTerm.trim()) return;
+    setLoading(true);
+    fetchExternalJobs(searchTerm, 'Turkey');
+  };
+
+  // Filter local jobs based on search term and work type
+  const filteredLocalJobs = jobs.filter(job => {
     const matchesSearch = job.job_title?.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           job.company_name?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = workTypeFilter === 'Tümü' || job.work_type === workTypeFilter;
     return matchesSearch && matchesType;
   });
+
+  // Filter external jobs based on work type
+  const filteredExternalJobs = externalJobs.filter(job => {
+    const matchesType = workTypeFilter === 'Tümü' || job.work_type === workTypeFilter || job.work_type === 'Belirtilmemiş';
+    return matchesType;
+  });
+
+  const allJobs = [...filteredLocalJobs, ...filteredExternalJobs];
 
   return (
     <div className="min-h-screen bg-[#f7f9fb] text-[#191c1e] font-sans selection:bg-[#4648d4] selection:text-white">
@@ -87,17 +121,15 @@ export default function PublicJobsPage() {
           </motion.div>
 
           {/* Search Box */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
+          <form 
+            onSubmit={handleSearch}
             className="max-w-3xl mx-auto bg-white/80 backdrop-blur-xl p-3 md:p-4 rounded-2xl shadow-xl border border-white flex flex-col md:flex-row gap-3"
           >
             <div className="flex-1 relative flex items-center">
               <Search className="absolute left-4 w-5 h-5 text-[#76777d]" />
               <input 
                 type="text" 
-                placeholder="İş ilanı, unvan veya şirket ara..."
+                placeholder="Örn: Garson, Aşçı, Yazılımcı, Şoför..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-12 pr-4 py-3.5 bg-[#f7f9fb] border border-[#e5e7eb] rounded-xl focus:ring-2 focus:ring-[#4648d4]/50 outline-none text-[#191c1e] placeholder-[#76777d] font-medium"
@@ -116,10 +148,10 @@ export default function PublicJobsPage() {
                 <option value="Ofis">Ofis</option>
               </select>
             </div>
-            <button className="bg-[#4648d4] hover:bg-[#4648d4]/90 text-white font-bold px-8 py-3.5 rounded-xl transition-colors shrink-0">
-              Bul
+            <button type="submit" disabled={isSearching} className="bg-[#4648d4] hover:bg-[#4648d4]/90 text-white font-bold px-8 py-3.5 rounded-xl transition-colors shrink-0 disabled:opacity-70">
+              {isSearching ? 'Aranıyor...' : 'Bul'}
             </button>
-          </motion.div>
+          </form>
         </div>
       </section>
 
@@ -130,7 +162,7 @@ export default function PublicJobsPage() {
           <div className="flex justify-between items-end mb-8">
             <div>
               <h2 className="text-2xl font-black text-[#191c1e]">Güncel Fırsatlar</h2>
-              <p className="text-[#76777d] text-sm mt-1">{filteredJobs.length} iş ilanı bulundu</p>
+              <p className="text-[#76777d] text-sm mt-1">Sistemimiz internetteki {allJobs.length} aktif ilanı buldu</p>
             </div>
           </div>
 
@@ -150,15 +182,15 @@ export default function PublicJobsPage() {
                 </div>
               ))}
             </div>
-          ) : filteredJobs.length === 0 ? (
+          ) : allJobs.length === 0 ? (
             <div className="bg-white p-16 rounded-3xl border border-[#e5e7eb] text-center shadow-sm">
               <div className="w-20 h-20 bg-[#eff4ff] rounded-full flex items-center justify-center mx-auto mb-4">
                 <Search className="w-10 h-10 text-[#4648d4]" />
               </div>
               <h3 className="text-xl font-bold text-[#191c1e] mb-2">İlan Bulunamadı</h3>
-              <p className="text-[#76777d]">Arama kriterlerinize uygun iş ilanı henüz eklenmemiş.</p>
+              <p className="text-[#76777d]">Arama kriterlerinize uygun iş ilanı bulunamadı.</p>
               <button 
-                onClick={() => {setSearchTerm(''); setWorkTypeFilter('Tümü');}}
+                onClick={() => {setSearchTerm(''); setWorkTypeFilter('Tümü'); fetchExternalJobs('Genel Başvuru', 'Turkey');}}
                 className="mt-6 text-[#4648d4] font-bold hover:underline"
               >
                 Filtreleri Temizle
@@ -166,7 +198,7 @@ export default function PublicJobsPage() {
             </div>
           ) : (
             <div className="space-y-5">
-              {filteredJobs.map((job, idx) => {
+              {allJobs.map((job, idx) => {
                 const initial = job.company_name?.[0]?.toUpperCase() || 'C';
                 
                 return (
@@ -194,19 +226,33 @@ export default function PublicJobsPage() {
                             <h3 className="text-xl font-black text-[#191c1e] group-hover:text-[#4648d4] transition-colors">
                               {job.job_title}
                             </h3>
-                            <div className="flex items-center gap-2 mt-1.5 text-[#45464d] font-medium text-sm">
+                            <div className="flex items-center gap-2 mt-1.5 text-[#45464d] font-medium text-sm flex-wrap">
                               <Building2 className="w-4 h-4 text-[#76777d]" />
                               {job.company_name}
                               <span className="w-1 h-1 rounded-full bg-[#c6c6cd] mx-1" />
                               <MapPin className="w-4 h-4 text-[#76777d]" />
                               {job.location}
+                              {job.is_external && (
+                                <>
+                                  <span className="w-1 h-1 rounded-full bg-[#c6c6cd] mx-1" />
+                                  <span className="bg-amber-100 text-amber-800 text-[10px] px-2 py-0.5 rounded uppercase font-bold tracking-wider">
+                                    DIŞ İLAN
+                                  </span>
+                                </>
+                              )}
                             </div>
                           </div>
                           
                           {/* Apply Button */}
-                          <Link href="/login" className="hidden md:flex shrink-0 items-center justify-center bg-[#f7f9fb] text-[#191c1e] hover:bg-[#4648d4] hover:text-white font-bold px-6 py-2.5 rounded-xl border border-[#e5e7eb] hover:border-[#4648d4] transition-all duration-300 shadow-sm">
-                            Başvur <ArrowRight className="w-4 h-4 ml-2" />
-                          </Link>
+                          {job.is_external ? (
+                            <a href={`https://www.google.com/search?q=${encodeURIComponent(job.company_name + ' ' + job.job_title + ' iş ilanı')}`} target="_blank" rel="noopener noreferrer" className="hidden md:flex shrink-0 items-center justify-center bg-[#f7f9fb] text-[#191c1e] hover:bg-amber-500 hover:border-amber-500 hover:text-white font-bold px-6 py-2.5 rounded-xl border border-[#e5e7eb] transition-all duration-300 shadow-sm">
+                              Kaynağa Git <ArrowRight className="w-4 h-4 ml-2" />
+                            </a>
+                          ) : (
+                            <Link href="/login" className="hidden md:flex shrink-0 items-center justify-center bg-[#f7f9fb] text-[#191c1e] hover:bg-[#4648d4] hover:border-[#4648d4] hover:text-white font-bold px-6 py-2.5 rounded-xl border border-[#e5e7eb] transition-all duration-300 shadow-sm">
+                              Başvur <ArrowRight className="w-4 h-4 ml-2" />
+                            </Link>
+                          )}
                         </div>
 
                         <div className="mt-4">
@@ -234,9 +280,15 @@ export default function PublicJobsPage() {
                         </div>
 
                         {/* Mobile Apply Button */}
-                        <Link href="/login" className="mt-6 flex md:hidden w-full items-center justify-center bg-[#4648d4] text-white font-bold px-6 py-3 rounded-xl transition-all shadow-sm">
-                          Hemen Başvur
-                        </Link>
+                        {job.is_external ? (
+                          <a href={`https://www.google.com/search?q=${encodeURIComponent(job.company_name + ' ' + job.job_title + ' iş ilanı')}`} target="_blank" rel="noopener noreferrer" className="mt-6 flex md:hidden w-full items-center justify-center bg-amber-500 text-white font-bold px-6 py-3 rounded-xl transition-all shadow-sm">
+                            Kaynağa Git
+                          </a>
+                        ) : (
+                          <Link href="/login" className="mt-6 flex md:hidden w-full items-center justify-center bg-[#4648d4] text-white font-bold px-6 py-3 rounded-xl transition-all shadow-sm">
+                            Hemen Başvur
+                          </Link>
+                        )}
                       </div>
                     </div>
                   </motion.div>
