@@ -1,12 +1,12 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { createClient } from '@/lib/supabase-client';
+import { createClientComponentClient } from '@/lib/supabase-client';
 import { Briefcase, Brain, MapPin, Building2, ChevronRight, Zap, Filter, Search } from 'lucide-react';
 import Link from 'next/link';
 
 export default function JobsPage() {
-  const supabase = createClient();
+  const supabase = createClientComponentClient();
   const [preferences, setPreferences] = useState<any>(null);
   const [jobs, setJobs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
