@@ -41,7 +41,6 @@ LÜTFEN İNTERNETTE ŞU AN VAR OLAN, GERÇEK BAŞVURU LİNKLERİ (apply_url) OLA
         contents: [{ parts: [{ text: prompt }] }],
         tools: [{ googleSearch: {} }],
         generationConfig: {
-          response_mime_type: "application/json",
           temperature: 0.1
         }
       })
@@ -49,7 +48,15 @@ LÜTFEN İNTERNETTE ŞU AN VAR OLAN, GERÇEK BAŞVURU LİNKLERİ (apply_url) OLA
 
     const data = await res.json();
     if (data.candidates && data.candidates[0].content.parts[0].text) {
-      const jsonText = data.candidates[0].content.parts[0].text;
+      let jsonText = data.candidates[0].content.parts[0].text.trim();
+      
+      // Extract JSON array robustly since markdown response block may enclose it
+      const jsonStart = jsonText.indexOf('[');
+      const jsonEnd = jsonText.lastIndexOf(']');
+      if (jsonStart !== -1 && jsonEnd !== -1) {
+        jsonText = jsonText.substring(jsonStart, jsonEnd + 1);
+      }
+      
       const jobs = JSON.parse(jsonText);
       return NextResponse.json({ jobs });
     }
