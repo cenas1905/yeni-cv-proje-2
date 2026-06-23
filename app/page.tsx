@@ -149,6 +149,7 @@ export default function HomePage() {
 
             {/* Nav */}
             <nav className="hidden md:flex gap-8 items-center">
+              <Link href="/jobs" className="text-[#45464d] hover:text-[#4648d4] font-medium text-sm transition-colors">İş İlanları</Link>
               <a href="#features" onClick={(e) => handleScroll(e, 'features')} className="text-[#45464d] hover:text-[#4648d4] font-medium text-sm transition-colors">Özellikler</a>
               <a href="#nasil-calisir" onClick={(e) => handleScroll(e, 'nasil-calisir')} className="text-[#45464d] hover:text-[#4648d4] font-medium text-sm transition-colors">Nasıl Çalışır?</a>
               <a href="#pricing" onClick={(e) => handleScroll(e, 'pricing')} className="text-[#45464d] hover:text-[#4648d4] font-medium text-sm transition-colors">Fiyatlar</a>
