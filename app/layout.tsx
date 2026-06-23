@@ -25,6 +25,9 @@ export const metadata: Metadata = {
     description: "60 saniyede yapay zeka destekli profesyonel CV oluşturun.",
     type: "website",
   },
+  verification: {
+    google: "V5PkLzII7TU3EPkxQT2vQFoQjErMAO7b5uX-sET5LnI",
+  },
 };
 
 export default function RootLayout({
