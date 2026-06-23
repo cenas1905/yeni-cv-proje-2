@@ -331,7 +331,7 @@ export default function DashboardJobsPage() {
         <div className="fixed bottom-6 right-6 w-72 bg-white/80 backdrop-blur-md p-4 rounded-xl shadow-[0_10px_30px_-5px_rgba(15,23,42,0.15)] z-40 border border-[#dbe1ff] animate-in slide-in-from-bottom-8 duration-700 hidden lg:block">
           <div className="flex items-center gap-2 mb-2">
             <div className="h-8 w-8 rounded-full bg-[#0051d5] text-white flex items-center justify-center">
-              <AutoAwesome className="w-4 h-4 fill-current" />
+              <Zap className="w-4 h-4 fill-current" />
             </div>
             <h4 className="text-sm text-[#0b1c30] font-bold">AI İpucu</h4>
           </div>
