@@ -6,7 +6,7 @@ import {
   LayoutDashboard, Settings, LogOut,
   FileText, Briefcase, Brain, Plus, Zap,
   User, GraduationCap, Sparkles, HelpCircle,
-  Bell, Download, Search
+  Bell, Download, Search, Users
 } from 'lucide-react';
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -40,6 +40,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     { href: '/dashboard/cv/new', label: 'Yeni CV', icon: <Plus className="w-5 h-5" /> },
     { href: '/cover-letters', label: 'Motivasyon', icon: <FileText className="w-5 h-5" /> },
     { href: '/dashboard/jobs', label: 'İş Fırsatlarım', icon: <Briefcase className="w-5 h-5" /> },
+    { href: '/dashboard/cv-pool', label: 'CV Havuzu', icon: <Users className="w-5 h-5" /> },
     { href: '/settings', label: 'Ayarlar', icon: <Settings className="w-5 h-5" /> },
   ];
 
