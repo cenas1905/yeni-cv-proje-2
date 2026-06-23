@@ -1,0 +1,295 @@
+
+<!-- TopNavBar Cluster -->
+<header class="bg-surface-container-lowest dark:bg-primary-container w-full top-0 sticky z-50 border-b border-outline-variant dark:border-outline shadow-sm">
+<div class="flex justify-between items-center px-gutter h-16 w-full max-w-container-max mx-auto">
+<div class="flex items-center gap-md">
+<span class="font-headline-md text-headline-md font-bold text-primary dark:text-on-primary-fixed">CareerAI</span>
+<nav class="hidden md:flex items-center gap-lg ml-xl">
+<a class="font-label-md text-label-md text-on-surface-variant dark:text-on-primary-container hover:text-secondary dark:hover:text-secondary-fixed transition-colors cursor-pointer active:scale-95" href="#">Dashboard</a>
+<a class="font-label-md text-label-md text-secondary dark:text-secondary-fixed border-b-2 border-secondary dark:border-secondary-fixed pb-1 cursor-pointer active:scale-95" href="#">Jobs</a>
+<a class="font-label-md text-label-md text-on-surface-variant dark:text-on-primary-container hover:text-secondary dark:hover:text-secondary-fixed transition-colors cursor-pointer active:scale-95" href="#">Analytics</a>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<div class="hidden md:block relative">
+<input class="bg-surface-container h-10 px-md rounded-full border-none focus:ring-2 focus:ring-secondary w-64 text-label-md" placeholder="Search..." type="text"/>
+<span class="material-symbols-outlined absolute right-3 top-2 text-on-surface-variant">search</span>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">settings</button>
+<div class="h-8 w-8 rounded-full bg-surface-container-high border border-outline-variant overflow-hidden">
+<img class="h-full w-full object-cover" data-alt="A professional studio headshot of a smiling male designer with short dark hair and modern glasses. He is wearing a crisp navy blue blazer over a white shirt. The background is a soft, blurred office environment with warm morning light filtering through high-end minimalist windows. The overall aesthetic is clean, confident, and future-ready." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBEXamI6xrX_ADVVQbbg9IvQ8WFhCsSDosKyLmbN5gOKWgXXyA64Be12zSBF3eXCm6FMsEcdS2_uBECwfB9M5byQcZW4Y8CADbhn5dioq2SDm-pvcHk2kPFf1lN--qXW4DKObiRgb5vKxnb5dJMcyoUcMnd973AIHElW9PFUzo4pehuIeAmGFqwol_OjF5NuJfqqRrxD5_P6b7F8f9jCVpjc2JuCAh7E_Ix-Zlk7eUqtV0UyzLBARnC5lLOMClUd9edYIOe_u1x30A"/>
+</div>
+</div>
+</div>
+</header>
+<div class="max-w-container-max mx-auto flex flex-col md:flex-row min-h-[calc(100vh-64px)] px-gutter py-lg gap-lg">
+<!-- Sidebar Filter Form -->
+<aside class="w-full md:w-80 flex-shrink-0">
+<div class="glass-panel p-lg rounded-xl flex flex-col gap-lg sticky top-24">
+<div class="border-b border-outline-variant pb-md">
+<h2 class="font-headline-md text-headline-md text-on-surface">Filtreler</h2>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-xs">AI destekli eşleşme için tercihlerinizi belirleyin.</p>
+</div>
+<div class="flex flex-col gap-md">
+<!-- CV URL Input -->
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface-variant flex items-center gap-xs">
+<span class="material-symbols-outlined text-[18px]">link</span> CV URL (LinkedIn/Drive)
+                        </label>
+<input class="w-full h-11 bg-surface-container-lowest border-outline-variant rounded-lg focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all text-body-md" placeholder="https://..." type="text"/>
+</div>
+<!-- Job Type -->
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface-variant">Aranan Pozisyon</label>
+<input class="w-full h-11 bg-surface-container-lowest border-outline-variant rounded-lg focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all text-body-md" placeholder="Örn: Senior Frontend Developer" type="text"/>
+</div>
+<!-- Location Grid -->
+<div class="grid grid-cols-2 gap-sm">
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface-variant">Şehir</label>
+<select class="w-full h-11 bg-surface-container-lowest border-outline-variant rounded-lg focus:border-secondary transition-all text-label-md">
+<option>İstanbul</option>
+<option>Ankara</option>
+<option>İzmir</option>
+<option>Uzaktan</option>
+</select>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface-variant">İlçe</label>
+<input class="w-full h-11 bg-surface-container-lowest border-outline-variant rounded-lg focus:border-secondary transition-all text-label-md" placeholder="Beşiktaş" type="text"/>
+</div>
+</div>
+<!-- Age & Toggle -->
+<div class="flex flex-col gap-md pt-sm">
+<div class="flex items-center justify-between">
+<label class="font-label-md text-label-md text-on-surface-variant">Yaş Aralığı</label>
+<input class="w-20 h-10 bg-surface-container-lowest border-outline-variant rounded-lg text-center font-label-md" placeholder="25" type="number"/>
+</div>
+<label class="flex items-center justify-between cursor-pointer group">
+<span class="font-label-md text-label-md text-on-surface">Rastgele İş İlanları</span>
+<div class="relative inline-block w-10 h-6">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-full h-full bg-outline-variant peer-checked:bg-secondary rounded-full transition-colors"></div>
+<div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-4"></div>
+</div>
+</label>
+</div>
+</div>
+<div class="flex flex-col gap-sm pt-md border-t border-outline-variant">
+<button class="w-full h-11 border border-outline-variant text-on-surface font-label-md rounded-lg hover:bg-surface-variant transition-colors active:scale-95">Tercihleri Kaydet</button>
+<button class="w-full h-11 bg-secondary text-on-secondary font-label-md rounded-lg ai-shimmer shadow-md transition-all active:scale-95 flex items-center justify-center gap-sm">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">bolt</span>
+                        İş Ara
+                    </button>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col gap-lg">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-md border-b border-outline-variant pb-md">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-on-background">İş Fırsatlarım</h1>
+<p class="font-body-md text-body-md text-on-surface-variant mt-xs">AI profilinizle en uyumlu 24 yeni ilan bulundu.</p>
+</div>
+<div class="flex items-center gap-sm">
+<span class="text-label-sm font-label-sm text-on-surface-variant">Sıralama:</span>
+<select class="bg-transparent border-none text-label-md font-label-md text-secondary focus:ring-0 cursor-pointer">
+<option>En Yüksek Eşleşme</option>
+<option>En Yeni İlanlar</option>
+<option>Maaş Skalası</option>
+</select>
+</div>
+</div>
+<!-- Jobs Grid -->
+<div class="grid grid-cols-1 @container lg:grid-cols-2 gap-lg">
+<!-- Card 1 -->
+<div class="bg-surface-container-lowest job-card-shadow rounded-xl p-lg border border-outline-variant hover:border-secondary transition-all flex flex-col gap-md group">
+<div class="flex justify-between items-start">
+<div class="flex gap-md">
+<div class="h-14 w-14 rounded-lg bg-surface-container border border-outline-variant flex items-center justify-center overflow-hidden">
+<img class="w-10 h-10 object-contain" data-alt="A clean and minimal tech company logo featuring abstract geometric shapes representing networking and connectivity. The colors are professional navy blue and silver on a crisp white background. The logo reflects a high-end software development firm with a global presence, conveying reliability and innovation." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4lrk-Kwd8CrN8SKi46RCWoNsRQeZyYyeNikTYQt80NsdKizTNVs3-fu4qk1NEg5XANQku3DPda2P66jjdoI9sfYtXzLcl6nd5GPCn4p7vCK5Tzf9DgE2bl0KNrV-D6v-LRj2LN69baXcv_DX1oDKImGl3e3QY7xvQG4SGFTiCmGyy7T2dcpbyo6l-p3vJr0_yrmfjLnWYhzTae3AxNFUGx7Xib8IVnFF4pQDw3i9GykoW-aKAOVHoFOm73aCHB29XxzFaMoji_yE"/>
+</div>
+<div>
+<h3 class="font-headline-md text-body-lg font-bold text-on-surface group-hover:text-secondary transition-colors">Senior Frontend Developer</h3>
+<p class="font-label-md text-label-md text-on-surface-variant">TechNova Solutions</p>
+</div>
+</div>
+<div class="flex flex-col items-end gap-xs">
+<span class="bg-secondary-container text-on-secondary-container px-sm py-1 rounded-full text-label-sm font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+                                98% Match
+                            </span>
+<span class="text-label-sm text-on-surface-variant italic">2 saat önce</span>
+</div>
+</div>
+<div class="flex flex-wrap gap-xs">
+<span class="bg-surface-variant text-on-surface-variant px-sm py-1 rounded text-label-sm border border-outline-variant/30">Uzaktan</span>
+<span class="bg-surface-variant text-on-surface-variant px-sm py-1 rounded text-label-sm border border-outline-variant/30">Tam Zamanlı</span>
+<span class="bg-surface-variant text-on-surface-variant px-sm py-1 rounded text-label-sm border border-outline-variant/30">React / Next.js</span>
+<span class="bg-surface-variant text-on-surface-variant px-sm py-1 rounded text-label-sm border border-outline-variant/30">TypeScript</span>
+</div>
+<p class="font-body-md text-on-surface-variant line-clamp-2">AI destekli arayüz mimarilerinin geliştirilmesinden sorumlu olacak, React ekosistemine hakim uzman geliştirici arıyoruz.</p>
+<div class="flex items-center justify-between mt-sm pt-md border-t border-outline-variant">
+<div class="flex items-center gap-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">location_on</span>
+<span class="text-label-md">İstanbul, Beşiktaş</span>
+</div>
+<button class="bg-secondary text-on-secondary px-lg h-10 rounded-lg font-label-md hover:bg-secondary-container hover:text-on-secondary-container transition-all active:scale-95">Başvur</button>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container-lowest job-card-shadow rounded-xl p-lg border border-outline-variant hover:border-secondary transition-all flex flex-col gap-md group">
+<div class="flex justify-between items-start">
+<div class="flex gap-md">
+<div class="h-14 w-14 rounded-lg bg-surface-container border border-outline-variant flex items-center justify-center overflow-hidden">
+<img class="w-10 h-10 object-contain" data-alt="A modern corporate logo for a financial technology startup. The emblem is a stylized infinity symbol morphing into a bar chart, rendered in vibrant teal and deep charcoal gray. The background is a flat light-gray surface. The design evokes a sense of dynamic growth, data precision, and professional financial management." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBeKd2UQFaPf7iugdaIKrdkBpKGMy9rBhPOEqI0RS-VQD9WAFRN2uV4PObaBpzwNFfmi0WqjbGChTH54r2zcvdXVoLiDXtZnKAV7EuNPpcSRjXHVAZYYA6htnZX2FFeLUdLWljat6uh6zPK20r3P5bCflicrCmbHiVS11Y3Rb_-xbRD7rCmtDxU8Dqnido5i3J-P-u0BNablac1sV5ZbUhdHg-dfzjhiE2bWJfmFZHct11i8vE_-mwL6KknG0yamSg63BgUTDIv5yg"/>
+</div>
+<div>
+<h3 class="font-headline-md text-body-lg font-bold text-on-surface group-hover:text-secondary transition-colors">UX/UI Designer</h3>
+<p class="font-label-md text-label-md text-on-surface-variant">FinFlow Analytics</p>
+</div>
+</div>
+<div class="flex flex-col items-end gap-xs">
+<span class="bg-secondary-container text-on-secondary-container px-sm py-1 rounded-full text-label-sm font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+                                92% Match
+                            </span>
+<span class="text-label-sm text-on-surface-variant italic">Dün</span>
+</div>
+</div>
+<div class="flex flex-wrap gap-xs">
+<span class="bg-surface-variant text-on-surface-variant px-sm py-1 rounded text-label-sm border border-outline-variant/30">Hibrit</span>
+<span class="bg-surface-variant text-on-surface-variant px-sm py-1 rounded text-label-sm border border-outline-variant/30">Tam Zamanlı</span>
+<span class="bg-surface-variant text-on-surface-variant px-sm py-1 rounded text-label-sm border border-outline-variant/30">Figma</span>
+<span class="bg-surface-variant text-on-surface-variant px-sm py-1 rounded text-label-sm border border-outline-variant/30">SaaS Experience</span>
+</div>
+<p class="font-body-md text-on-surface-variant line-clamp-2">Finansal verileri görselleştiren karmaşık dashboard projelerinde kullanıcı deneyimini yönetecek tasarımcılar arıyoruz.</p>
+<div class="flex items-center justify-between mt-sm pt-md border-t border-outline-variant">
+<div class="flex items-center gap-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">location_on</span>
+<span class="text-label-md">Ankara, Çankaya</span>
+</div>
+<button class="bg-secondary text-on-secondary px-lg h-10 rounded-lg font-label-md hover:bg-secondary-container hover:text-on-secondary-container transition-all active:scale-95">Başvur</button>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface-container-lowest job-card-shadow rounded-xl p-lg border border-outline-variant hover:border-secondary transition-all flex flex-col gap-md group">
+<div class="flex justify-between items-start">
+<div class="flex gap-md">
+<div class="h-14 w-14 rounded-lg bg-surface-container border border-outline-variant flex items-center justify-center overflow-hidden">
+<img class="w-10 h-10 object-contain" data-alt="A professional minimalist logo for an artificial intelligence research lab. The icon is a brain-inspired node map with glowing connecting points, colored in shades of indigo and electric blue. The presentation is sleek, scientific, and authoritative, set against a dark-mode-ready translucent panel that suggests deep learning and future-ready technology." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBqmPbkYMD2KU6Ng7sjCMqEr0HhBh44GD8FQR5vMd6pcA3Q6P3p5UvU59e4-CBZzJLrYplQTdrJcyrvYeePWSZcviEoj8f7iTXJ8LwLSL0k8-mtSe3I_Lsq_uZQQW_bq1TV3KlK1EIK2OtsEMyir9nZyvOuhKkrFtfczgRS0eZOzZoow34885FQ5gtaDhwE2OBxAae7x_FRy28Ydd2zquetM8lag2pD_c6wmicmTw0y-qAES_JnqjPKI9pBxvBfDWVBj4ooaMg9xsM"/>
+</div>
+<div>
+<h3 class="font-headline-md text-body-lg font-bold text-on-surface group-hover:text-secondary transition-colors">AI Research Engineer</h3>
+<p class="font-label-md text-label-md text-on-surface-variant">CogniCore Labs</p>
+</div>
+</div>
+<div class="flex flex-col items-end gap-xs">
+<span class="bg-secondary-container text-on-secondary-container px-sm py-1 rounded-full text-label-sm font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+                                85% Match
+                            </span>
+<span class="text-label-sm text-on-surface-variant italic">3 gün önce</span>
+</div>
+</div>
+<div class="flex flex-wrap gap-xs">
+<span class="bg-surface-variant text-on-surface-variant px-sm py-1 rounded text-label-sm border border-outline-variant/30">Ofis</span>
+<span class="bg-surface-variant text-on-surface-variant px-sm py-1 rounded text-label-sm border border-outline-variant/30">Proje Bazlı</span>
+<span class="bg-surface-variant text-on-surface-variant px-sm py-1 rounded text-label-sm border border-outline-variant/30">Python</span>
+<span class="bg-surface-variant text-on-surface-variant px-sm py-1 rounded text-label-sm border border-outline-variant/30">PyTorch</span>
+</div>
+<p class="font-body-md text-on-surface-variant line-clamp-2">NLP ve büyük dil modelleri üzerine Ar-Ge projelerinde aktif rol alacak doktora seviyesinde veya deneyimli mühendisler.</p>
+<div class="flex items-center justify-between mt-sm pt-md border-t border-outline-variant">
+<div class="flex items-center gap-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">location_on</span>
+<span class="text-label-md">İstanbul, Sarıyer</span>
+</div>
+<button class="bg-secondary text-on-secondary px-lg h-10 rounded-lg font-label-md hover:bg-secondary-container hover:text-on-secondary-container transition-all active:scale-95">Başvur</button>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="bg-surface-container-lowest job-card-shadow rounded-xl p-lg border border-outline-variant hover:border-secondary transition-all flex flex-col gap-md group">
+<div class="flex justify-between items-start">
+<div class="flex gap-md">
+<div class="h-14 w-14 rounded-lg bg-surface-container border border-outline-variant flex items-center justify-center overflow-hidden">
+<img class="w-10 h-10 object-contain" data-alt="A vibrant and energetic logo for a creative marketing agency. The design features a stylized rocket ship taking off, leaving a trail of colorful gradient smoke in orange and magenta. The typography is bold and playful, conveying a sense of high-speed growth, creative disruption, and youthful ambition. The background is a clean white studio light." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCD8eLLbwFCV5hoNGBs4Ya-M29c3W3FiWz53p8alaaZjwhsVjzJJfiIAUSO5E2rDcxw4D0tJeAZWsjDtVb1q0N0bwN19t4glZnSw-rUp5iD0Hx9d7I1EgNiKIsGfNCSiRY6Xcsw4dIxnwrWjhuJ8S9XIwzG2WpP1gAqDOM62iztl9-H-Jv7YSt7N7pS8fC9-W0J9k1hYGbssDSZVARAmc41ROiv9wj50c1HY52cGNDaNB6zuY5qmCAbfpvnHbGP20AglYhE3jKQoCA"/>
+</div>
+<div>
+<h3 class="font-headline-md text-body-lg font-bold text-on-surface group-hover:text-secondary transition-colors">Marketing Manager</h3>
+<p class="font-label-md text-label-md text-on-surface-variant">Velocity Growth</p>
+</div>
+</div>
+<div class="flex flex-col items-end gap-xs">
+<span class="bg-secondary-container text-on-secondary-container px-sm py-1 rounded-full text-label-sm font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+                                78% Match
+                            </span>
+<span class="text-label-sm text-on-surface-variant italic">1 hafta önce</span>
+</div>
+</div>
+<div class="flex flex-wrap gap-xs">
+<span class="bg-surface-variant text-on-surface-variant px-sm py-1 rounded text-label-sm border border-outline-variant/30">Uzaktan</span>
+<span class="bg-surface-variant text-on-surface-variant px-sm py-1 rounded text-label-sm border border-outline-variant/30">Tam Zamanlı</span>
+<span class="bg-surface-variant text-on-surface-variant px-sm py-1 rounded text-label-sm border border-outline-variant/30">Digital Marketing</span>
+</div>
+<p class="font-body-md text-on-surface-variant line-clamp-2">Marka bilinirliğini artıracak, veri odaklı pazarlama stratejileri geliştirecek ve ekibi yönetecek vizyoner yönetici.</p>
+<div class="flex items-center justify-between mt-sm pt-md border-t border-outline-variant">
+<div class="flex items-center gap-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">location_on</span>
+<span class="text-label-md">İzmir, Konak</span>
+</div>
+<button class="bg-secondary text-on-secondary px-lg h-10 rounded-lg font-label-md hover:bg-secondary-container hover:text-on-secondary-container transition-all active:scale-95">Başvur</button>
+</div>
+</div>
+</div>
+<!-- Pagination -->
+<div class="flex justify-center items-center gap-sm py-xl">
+<button class="h-10 w-10 flex items-center justify-center rounded-lg border border-outline-variant text-on-surface hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="h-10 w-10 flex items-center justify-center rounded-lg bg-secondary text-on-secondary font-label-md">1</button>
+<button class="h-10 w-10 flex items-center justify-center rounded-lg border border-outline-variant text-on-surface hover:bg-surface-variant transition-colors font-label-md">2</button>
+<button class="h-10 w-10 flex items-center justify-center rounded-lg border border-outline-variant text-on-surface hover:bg-surface-variant transition-colors font-label-md">3</button>
+<span class="px-sm text-on-surface-variant">...</span>
+<button class="h-10 w-10 flex items-center justify-center rounded-lg border border-outline-variant text-on-surface hover:bg-surface-variant transition-colors font-label-md">12</button>
+<button class="h-10 w-10 flex items-center justify-center rounded-lg border border-outline-variant text-on-surface hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</main>
+</div>
+<!-- AI Suggestion Floating Card (Glassmorphism) -->
+<div class="fixed bottom-gutter right-gutter w-72 glass-panel p-md rounded-xl shadow-xl z-40 animate-bounce-subtle">
+<div class="flex items-center gap-sm mb-sm">
+<div class="h-8 w-8 rounded-full bg-secondary text-on-secondary flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+</div>
+<h4 class="font-label-md text-label-md text-on-surface font-bold">AI İpucu</h4>
+</div>
+<p class="font-label-sm text-label-sm text-on-surface-variant">CV'nizdeki "React" anahtar kelimesi TechNova Solutions ilanındaki gereksinimlerle 100% uyuşuyor!</p>
+<button class="w-full mt-md text-secondary font-label-sm hover:underline flex items-center justify-center gap-xs">
+            Detayları Gör <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</button>
+</div>
+<script>
+        // Micro-interactions for form focus
+        document.querySelectorAll('input, select').forEach(el => {
+            el.addEventListener('focus', () => {
+                el.parentElement.querySelector('label')?.classList.add('text-secondary');
+            });
+            el.addEventListener('blur', () => {
+                el.parentElement.querySelector('label')?.classList.remove('text-secondary');
+            });
+        });
+
+        // Hover effect for job cards depth
+        document.querySelectorAll('.job-card-shadow').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-4px)';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
+            });
+        });
+    </script>

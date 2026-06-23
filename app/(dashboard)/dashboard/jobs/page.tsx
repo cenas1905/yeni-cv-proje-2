@@ -97,10 +97,9 @@ export default function DashboardJobsPage() {
 
   return (
     <div className="max-w-[1280px] mx-auto flex flex-col md:flex-row min-h-[calc(100vh-64px)] px-6 py-6 gap-6 bg-[#f8f9ff] text-[#0b1c30] font-sans">
-      
       {/* Sidebar Filter Form */}
       <aside className="w-full md:w-80 flex-shrink-0">
-        <div className="bg-white/70 backdrop-blur-md border border-[#dbe1ff]/50 shadow-sm p-6 rounded-xl flex flex-col gap-6 sticky top-24">
+        <div className="bg-white/70 backdrop-blur-md border border-[#c6c6cd] shadow-sm p-6 rounded-xl flex flex-col gap-6 sticky top-24">
           <div className="border-b border-[#c6c6cd] pb-4">
             <h2 className="text-2xl font-bold text-[#0b1c30]">Filtreler</h2>
             <p className="text-sm text-[#45464d] mt-1 font-medium">AI destekli eşleşme için tercihlerinizi belirleyin.</p>
@@ -142,12 +141,15 @@ export default function DashboardJobsPage() {
                   onChange={(e) => setCity(e.target.value)}
                   className="w-full h-11 bg-white border border-[#c6c6cd] rounded-lg focus:border-[#0051d5] transition-all text-sm px-3 outline-none"
                 >
-                  <option value="İstanbul">İstanbul</option>
-                  <option value="Ankara">Ankara</option>
-                  <option value="İzmir">İzmir</option>
-                  <option value="Bursa">Bursa</option>
-                  <option value="Antalya">Antalya</option>
-                  <option value="Uzaktan">Uzaktan</option>
+                  <optgroup label="Genel & Uzaktan">
+                    <option value="Uzaktan (Remote)">Uzaktan (Remote)</option>
+                    <option value="Dünya Geneli (Worldwide)">Dünya Geneli</option>
+                    <option value="Avrupa (Europe)">Avrupa</option>
+                    <option value="Amerika (USA)">Amerika</option>
+                  </optgroup>
+                  <optgroup label="Tüm Türkiye (81 İl)">
+                    <option value="Adana">Adana</option><option value="Adıyaman">Adıyaman</option><option value="Afyonkarahisar">Afyonkarahisar</option><option value="Ağrı">Ağrı</option><option value="Amasya">Amasya</option><option value="Ankara">Ankara</option><option value="Antalya">Antalya</option><option value="Artvin">Artvin</option><option value="Aydın">Aydın</option><option value="Balıkesir">Balıkesir</option><option value="Bilecik">Bilecik</option><option value="Bingöl">Bingöl</option><option value="Bitlis">Bitlis</option><option value="Bolu">Bolu</option><option value="Burdur">Burdur</option><option value="Bursa">Bursa</option><option value="Çanakkale">Çanakkale</option><option value="Çankırı">Çankırı</option><option value="Çorum">Çorum</option><option value="Denizli">Denizli</option><option value="Diyarbakır">Diyarbakır</option><option value="Edirne">Edirne</option><option value="Elazığ">Elazığ</option><option value="Erzincan">Erzincan</option><option value="Erzurum">Erzurum</option><option value="Eskişehir">Eskişehir</option><option value="Gaziantep">Gaziantep</option><option value="Giresun">Giresun</option><option value="Gümüşhane">Gümüşhane</option><option value="Hakkari">Hakkari</option><option value="Hatay">Hatay</option><option value="Isparta">Isparta</option><option value="Mersin">Mersin</option><option value="İstanbul">İstanbul</option><option value="İzmir">İzmir</option><option value="Kars">Kars</option><option value="Kastamonu">Kastamonu</option><option value="Kayseri">Kayseri</option><option value="Kırklareli">Kırklareli</option><option value="Kırşehir">Kırşehir</option><option value="Kocaeli">Kocaeli</option><option value="Konya">Konya</option><option value="Kütahya">Kütahya</option><option value="Malatya">Malatya</option><option value="Manisa">Manisa</option><option value="Kahramanmaraş">Kahramanmaraş</option><option value="Mardin">Mardin</option><option value="Muğla">Muğla</option><option value="Muş">Muş</option><option value="Nevşehir">Nevşehir</option><option value="Niğde">Niğde</option><option value="Ordu">Ordu</option><option value="Rize">Rize</option><option value="Sakarya">Sakarya</option><option value="Samsun">Samsun</option><option value="Siirt">Siirt</option><option value="Sinop">Sinop</option><option value="Sivas">Sivas</option><option value="Tekirdağ">Tekirdağ</option><option value="Tokat">Tokat</option><option value="Trabzon">Trabzon</option><option value="Tunceli">Tunceli</option><option value="Şanlıurfa">Şanlıurfa</option><option value="Uşak">Uşak</option><option value="Van">Van</option><option value="Yozgat">Yozgat</option><option value="Zonguldak">Zonguldak</option><option value="Aksaray">Aksaray</option><option value="Bayburt">Bayburt</option><option value="Karaman">Karaman</option><option value="Kırıkkale">Kırıkkale</option><option value="Batman">Batman</option><option value="Şırnak">Şırnak</option><option value="Bartın">Bartın</option><option value="Ardahan">Ardahan</option><option value="Iğdır">Iğdır</option><option value="Yalova">Yalova</option><option value="Karabük">Karabük</option><option value="Kilis">Kilis</option><option value="Osmaniye">Osmaniye</option><option value="Düzce">Düzce</option>
+                  </optgroup>
                 </select>
               </div>
               <div className="flex flex-col gap-1">
@@ -157,7 +159,7 @@ export default function DashboardJobsPage() {
                   value={district}
                   onChange={(e) => setDistrict(e.target.value)}
                   className="w-full h-11 bg-white border border-[#c6c6cd] rounded-lg focus:border-[#0051d5] transition-all text-sm px-3 outline-none" 
-                  placeholder="Beşiktaş" 
+                  placeholder="Opsiyonel" 
                 />
               </div>
             </div>
@@ -210,7 +212,7 @@ export default function DashboardJobsPage() {
               ) : (
                 <Zap className="w-5 h-5" />
               )}
-              {searchingJobs ? 'Aranıyor...' : 'İş Ara'}
+              {searchingJobs ? 'İnternette Aranıyor...' : 'İş Ara'}
             </button>
           </div>
         </div>
@@ -222,7 +224,7 @@ export default function DashboardJobsPage() {
           <div>
             <h1 className="text-[32px] font-bold text-[#0b1c30] leading-tight">İş Fırsatlarım</h1>
             <p className="text-base text-[#45464d] mt-1 font-medium">
-              {hasSearched ? `AI profilinizle en uyumlu ${jobs.length} ilan bulundu.` : 'AI profilinle en uyumlu ilanları bulmak için sağdan kriterlerini belirle.'}
+              {hasSearched ? `Gerçek zamanlı arama ile internette ${jobs.length} güncel ilan bulundu.` : 'Kriterlerini belirle ve internetteki GERÇEK ilanları anında listele.'}
             </p>
           </div>
           {hasSearched && (
@@ -244,9 +246,9 @@ export default function DashboardJobsPage() {
                <div className="w-20 h-20 bg-[#f8f9ff] rounded-full flex items-center justify-center mb-4 border-2 border-dashed border-[#c6c6cd]">
                  <Search className="w-8 h-8 text-[#76777d]" />
                </div>
-               <h3 className="text-lg font-bold text-[#0b1c30] mb-2">Arama Bekleniyor</h3>
+               <h3 className="text-lg font-bold text-[#0b1c30] mb-2">Canlı İnternet Taraması Bekleniyor</h3>
                <p className="text-[#45464d] max-w-sm mx-auto">
-                 Sol taraftaki formu doldurup "İş Ara" butonuna bastığınızda sonuçlar burada listelenecektir.
+                 "İş Ara" butonuna tıkladığında yapay zeka senin için anlık olarak webi tarayıp gerçek ilanları getirecek.
                </p>
              </div>
           ) : searchingJobs ? (
@@ -266,7 +268,7 @@ export default function DashboardJobsPage() {
             <div className="col-span-1 lg:col-span-2 bg-white p-12 rounded-xl border border-[#c6c6cd] text-center shadow-sm h-[300px] flex flex-col items-center justify-center">
               <Briefcase className="w-16 h-16 text-[#c6c6cd] mx-auto mb-4" />
               <h3 className="text-xl font-bold text-[#0b1c30] mb-2">Kriterlere Uygun İlan Bulunamadı</h3>
-              <p className="text-[#45464d]">Arama kriterlerinizi genişletmeyi veya farklı bir şehir/ilçe denemeyi düşünebilirsiniz.</p>
+              <p className="text-[#45464d]">İnternetteki güncel kaynaklarda arama yaptık ancak sonuç bulamadık. Lütfen kriterlerini değiştirip tekrar dene.</p>
             </div>
           ) : (
             jobs.map((job, idx) => {
@@ -288,9 +290,9 @@ export default function DashboardJobsPage() {
                     <div className="flex flex-col items-end gap-1 shrink-0 ml-2">
                       <span className="bg-[#316bf3] text-white px-2 py-0.5 rounded-full text-xs font-bold flex items-center gap-1">
                         <Zap className="w-3 h-3 fill-current" />
-                        {matchPercentage}% Match
+                        {matchPercentage}% Uyum
                       </span>
-                      <span className="text-xs text-[#45464d] italic">Yeni</span>
+                      <span className="text-xs text-[#45464d] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded">Gerçek İlan</span>
                     </div>
                   </div>
                   
@@ -309,12 +311,12 @@ export default function DashboardJobsPage() {
                       <span className="text-sm font-semibold">{job.location || city}</span>
                     </div>
                     <a 
-                      href={`https://www.google.com/search?q=${encodeURIComponent(job.company_name + ' ' + job.job_title + ' iş ilanı')}`}
+                      href={job.apply_url || `https://www.google.com/search?q=${encodeURIComponent(job.company_name + ' ' + job.job_title + ' iş ilanı')}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="bg-[#0051d5] text-white px-6 h-10 rounded-lg text-sm font-bold hover:bg-[#316bf3] transition-colors active:scale-95 flex items-center justify-center"
+                      className="bg-[#0051d5] text-white px-6 h-10 rounded-lg text-sm font-bold hover:bg-[#316bf3] transition-colors active:scale-95 flex items-center justify-center gap-2 group-hover:shadow-md"
                     >
-                      Başvur
+                      Başvur (Gerçek Link)
                     </a>
                   </div>
                 </div>
@@ -329,7 +331,7 @@ export default function DashboardJobsPage() {
         <div className="fixed bottom-6 right-6 w-72 bg-white/80 backdrop-blur-md p-4 rounded-xl shadow-[0_10px_30px_-5px_rgba(15,23,42,0.15)] z-40 border border-[#dbe1ff] animate-in slide-in-from-bottom-8 duration-700 hidden lg:block">
           <div className="flex items-center gap-2 mb-2">
             <div className="h-8 w-8 rounded-full bg-[#0051d5] text-white flex items-center justify-center">
-              <Zap className="w-4 h-4 fill-current" />
+              <AutoAwesome className="w-4 h-4 fill-current" />
             </div>
             <h4 className="text-sm text-[#0b1c30] font-bold">AI İpucu</h4>
           </div>
@@ -337,7 +339,7 @@ export default function DashboardJobsPage() {
             CV'nizdeki yetenekler <strong>{jobs[0]?.company_name || 'bu'}</strong> ilanındaki gereksinimlerle yüksek oranda uyuşuyor!
           </p>
           <button className="w-full mt-3 text-[#0051d5] text-xs font-bold hover:underline flex items-center justify-center gap-1">
-            Detayları Gör <ChevronRight className="w-3 h-3" />
+            Hemen Başvur <ChevronRight className="w-3 h-3" />
           </button>
         </div>
       )}

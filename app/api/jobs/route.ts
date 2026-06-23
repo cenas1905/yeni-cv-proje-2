@@ -9,39 +9,40 @@ export async function GET(request: Request) {
   const cvUrl = searchParams.get('cvUrl') || '';
   const randomJobs = searchParams.get('randomJobs') === 'true';
   const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
+
   try {
-    const prompt = `Sen profesyonel bir iş ilanı ve kariyer eşleştirme motorusun. 
-    Kullanıcının tercihleri:
-    Şehir: ${city}
-    İlçe: ${district}
-    Yaş: ${age}
-    Aranan Pozisyon: ${jobType}
-    CV URL: ${cvUrl}
-    Rastgele İlanlar: ${randomJobs ? 'Evet' : 'Hayır'}
-    
-    ${randomJobs ? 'Bana bu şehre ve genel kriterlere uygun, farklı sektörlerden rastgele ama çok GERÇEKÇİ 4 adet iş ilanı oluştur.' : 'Bana bu kriterlere tam uyan, gerçek şirket isimlerine benzer (veya gerçek) şirketler ve çok inandırıcı açıklamaları olan 4 adet iş ilanı oluştur.'}
-    İlanlar Türkiye piyasasına ve gerçek hayat şartlarına tamamen uygun, profesyonel ve inandırıcı olmalı.
-    
-    Çıktı FORMATI KESİNLİKLE JSON DİZİSİ (ARRAY) OLMALIDIR, BAŞKA METİN EKLEME:
-    [
-      {
-        "id": "1",
-        "company_name": "Şirket Adı",
-        "job_title": "Pozisyon Adı",
-        "location": "Şehir, İlçe",
-        "work_type": "Tam Zamanlı / Yarı Zamanlı / Uzaktan",
-        "description": "Gerçekçi iş tanımı ve gereksinimler."
-      }
-    ]`;
+    const prompt = `Sen gerçek zamanlı internet araması yapabilen bir kariyer botusun.
+Google Arama (Search) aracını KULLANARAK şu anda aktif olarak yayında olan (LinkedIn, Kariyer.net, Indeed, Glassdoor vb.) GERÇEK iş ilanlarını bul.
+
+Kullanıcının tercihleri:
+Şehir/Lokasyon: ${city} ${district ? `(${district})` : ''}
+Aranan Pozisyon: ${jobType}
+Rastgele İlanlar: ${randomJobs ? 'Evet (farklı sektörlerden karışık güncel ilanlar bul)' : 'Hayır'}
+
+LÜTFEN İNTERNETTE ŞU AN VAR OLAN, GERÇEK BAŞVURU LİNKLERİ (apply_url) OLAN 5 ADET GERÇEK İŞ İLANI BUL. Asla uydurma veri kullanma! İlanların başvuru linkleri doğrudan o ilanın sayfasına gitmelidir (örn: linkedin.com/jobs/view/..., kariyer.net/is-ilani/...).
+
+Çıktı FORMATI KESİNLİKLE JSON DİZİSİ (ARRAY) OLMALIDIR, BAŞKA METİN EKLEME:
+[
+  {
+    "id": "1",
+    "company_name": "Gerçek Şirket Adı",
+    "job_title": "Gerçek Pozisyon Adı",
+    "location": "Şehir, Ülke",
+    "work_type": "Tam Zamanlı / Uzaktan",
+    "description": "Gerçek iş ilanı açıklaması ve aranan nitelikler.",
+    "apply_url": "https://gercek-basvuru-linki.com/ilan-detayi"
+  }
+]`;
 
     const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }],
+        tools: [{ googleSearch: {} }],
         generationConfig: {
           response_mime_type: "application/json",
-          temperature: 0.7
+          temperature: 0.1
         }
       })
     });
