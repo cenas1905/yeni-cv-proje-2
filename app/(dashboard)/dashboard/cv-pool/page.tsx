@@ -5,8 +5,7 @@ import { createClientComponentClient } from '@/lib/supabase-client';
 import { 
   Users, Search, Shield, ToggleLeft, ToggleRight, 
   MapPin, Briefcase, FileText, Download, ExternalLink,
-  DollarSign, Sparkles, Building2, CheckCircle2, ChevronRight,
-  Filter
+  DollarSign, Sparkles, CheckCircle2, Filter, Mail, Phone
 } from 'lucide-react';
 
 const CITIES = [
@@ -49,6 +48,8 @@ export default function CVPoolPage() {
   const [workTypes, setWorkTypes] = useState<string[]>(['Remote']);
   const [expectedSalary, setExpectedSalary] = useState<string>('');
   const [targetTitle, setTargetTitle] = useState<string>('');
+  const [contactEmail, setContactEmail] = useState<string>('');
+  const [contactPhone, setContactPhone] = useState<string>('');
 
   useEffect(() => {
     async function loadData() {
@@ -64,10 +65,10 @@ export default function CVPoolPage() {
         
         if (cvs && cvs.length > 0) {
           setUserCvs(cvs);
-          // Set default selected CV (first public or first overall)
-          const activeCv = cvs.find((c: any) => c.is_public) || cvs[0];
+          // Set default selected CV (first in pool or first overall)
+          const activeCv = cvs.find((c: any) => c.data?.in_pool) || cvs[0];
           setSelectedCvId(activeCv.id);
-          setSharingActive(activeCv.is_public || false);
+          setSharingActive(activeCv.data?.in_pool || false);
           
           // Pre-populate preference form from JSONB metadata if available
           const prefs = activeCv.data?.preferences;
@@ -77,9 +78,13 @@ export default function CVPoolPage() {
             setPreferredDistricts(prefs.preferred_districts || '');
             setWorkTypes(prefs.work_types || ['Remote']);
             setExpectedSalary(prefs.expected_salary?.toString() || '');
+            setContactEmail(prefs.contact_email || activeCv.data.personal?.email || user.email || '');
+            setContactPhone(prefs.contact_phone || activeCv.data.personal?.phone || '');
           } else {
             setTargetTitle(activeCv.data.personal?.headline || '');
             setPreferredCities(activeCv.data.personal?.location || 'İstanbul');
+            setContactEmail(activeCv.data.personal?.email || user.email || '');
+            setContactPhone(activeCv.data.personal?.phone || '');
           }
         }
       }
@@ -91,8 +96,10 @@ export default function CVPoolPage() {
         .eq('is_public', true);
 
       if (publicCvs) {
-        setAllPublicCvs(publicCvs);
-        setFilteredCvs(publicCvs);
+        // Filter in-memory: only CVs explicitly submitted to the pool by user
+        const poolCvs = publicCvs.filter((cv: any) => cv.data?.in_pool === true);
+        setAllPublicCvs(poolCvs);
+        setFilteredCvs(poolCvs);
       }
       setLoading(false);
     }
@@ -105,7 +112,7 @@ export default function CVPoolPage() {
     setSelectedCvId(cvId);
     const selected = userCvs.find((c: any) => c.id === cvId);
     if (selected) {
-      setSharingActive(selected.is_public || false);
+      setSharingActive(selected.data?.in_pool || false);
       const prefs = selected.data?.preferences;
       if (prefs) {
         setTargetTitle(prefs.job_title || selected.data.personal?.headline || '');
@@ -113,11 +120,15 @@ export default function CVPoolPage() {
         setPreferredDistricts(prefs.preferred_districts || '');
         setWorkTypes(prefs.work_types || ['Remote']);
         setExpectedSalary(prefs.expected_salary?.toString() || '');
+        setContactEmail(prefs.contact_email || selected.data.personal?.email || '');
+        setContactPhone(prefs.contact_phone || selected.data.personal?.phone || '');
       } else {
         setTargetTitle(selected.data.personal?.headline || '');
         setPreferredCities(selected.data.personal?.location || 'İstanbul');
         setPreferredDistricts('');
         setExpectedSalary('');
+        setContactEmail(selected.data.personal?.email || '');
+        setContactPhone(selected.data.personal?.phone || '');
       }
     }
   };
@@ -125,7 +136,6 @@ export default function CVPoolPage() {
   // Save sharing preferences to the active CV's JSONB metadata
   const saveSharingPreferences = async () => {
     if (!selectedCvId) return;
-    setSaving(false);
     setSaving(true);
 
     try {
@@ -134,19 +144,24 @@ export default function CVPoolPage() {
 
       const updatedData = {
         ...selected.data,
+        in_pool: sharingActive,
         preferences: {
           job_title: targetTitle,
           preferred_cities: preferredCities.split(',').map(s => s.trim()).filter(Boolean),
           preferred_districts: preferredDistricts,
           work_types: workTypes,
           expected_salary: expectedSalary ? parseInt(expectedSalary) : 0,
+          contact_email: contactEmail,
+          contact_phone: contactPhone,
         }
       };
 
+      // Set is_public to true if in pool so employers can view CV page,
+      // but if sharingActive is false, keep current is_public (don't break existing share links)
       const { error } = await supabase
         .from('cvs')
         .update({
-          is_public: sharingActive,
+          is_public: sharingActive ? true : selected.is_public,
           data: updatedData,
           updated_at: new Date().toISOString()
         })
@@ -155,7 +170,7 @@ export default function CVPoolPage() {
       if (error) throw error;
 
       // Update local state
-      setUserCvs(prev => prev.map((c: any) => c.id === selectedCvId ? { ...c, is_public: sharingActive, data: updatedData } : c));
+      setUserCvs(prev => prev.map((c: any) => c.id === selectedCvId ? { ...c, is_public: sharingActive ? true : c.is_public, data: updatedData } : c));
       
       // Reload CV pool list
       const { data: publicCvs } = await supabase
@@ -163,11 +178,12 @@ export default function CVPoolPage() {
         .select('id, user_id, title, slug, data, pdf_url, view_count, updated_at')
         .eq('is_public', true);
       if (publicCvs) {
-        setAllPublicCvs(publicCvs);
-        setFilteredCvs(publicCvs);
+        const poolCvs = publicCvs.filter((cv: any) => cv.data?.in_pool === true);
+        setAllPublicCvs(poolCvs);
+        setFilteredCvs(poolCvs);
       }
 
-      alert('Paylaşım ayarlarınız başarıyla kaydedildi!');
+      alert('Paylaşım ve iletişim ayarlarınız başarıyla kaydedildi!');
     } catch (err: any) {
       console.error('Error saving share settings:', err);
       alert('Ayarlar kaydedilirken hata oluştu: ' + err.message);
@@ -180,7 +196,7 @@ export default function CVPoolPage() {
   const applyFilters = () => {
     let result = [...allPublicCvs];
 
-    // 1. Position / Headline Search
+    // 1. Position / Headline / Skill Search
     if (searchTitle.trim()) {
       const query = searchTitle.toLowerCase();
       result = result.filter(cv => {
@@ -206,8 +222,9 @@ export default function CVPoolPage() {
     if (searchDistrict.trim()) {
       const query = searchDistrict.toLowerCase();
       result = result.filter(cv => {
+        const personalLoc = (cv.data.personal?.location || '').toLowerCase();
         const districts = (cv.data.preferences?.preferred_districts || '').toLowerCase();
-        return districts.includes(query);
+        return districts.includes(query) || personalLoc.includes(query);
       });
     }
 
@@ -236,13 +253,13 @@ export default function CVPoolPage() {
   };
 
   return (
-    <div className="flex-1 w-full max-w-[1280px] mx-auto px-6 py-8">
+    <div className="flex-1 w-full max-w-[1280px] mx-auto px-6 py-8" style={{ fontFamily: 'Inter, sans-serif' }}>
       {/* Page Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="text-3xl font-black text-[#0b1c30] tracking-tight">CV Havuzu</h1>
           <p className="text-[#45464d] text-base mt-1">
-            İş arayanların CV'lerini detaylı çalışma yerleriyle paylaştığı ve işverenlerin aday bulduğu ortak havuz.
+            Adayların CV'lerini ve iletişim tercihlerini paylaştığı, işverenlerin doğrudan e-posta veya telefon ile aday bulduğu ortak havuz.
           </p>
         </div>
         
@@ -250,13 +267,13 @@ export default function CVPoolPage() {
         <div className="flex bg-[#e5eeff] p-1 rounded-xl shrink-0 self-start">
           <button 
             onClick={() => setActiveTab('search')}
-            className={`flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-bold transition-all ${activeTab === 'search' ? 'bg-[#0051d5] text-white shadow-md' : 'text-[#45464d] hover:text-[#0b1c30]'}`}
+            className={`flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-bold transition-all cursor-pointer ${activeTab === 'search' ? 'bg-[#0051d5] text-white shadow-md' : 'text-[#45464d] hover:text-[#0b1c30]'}`}
           >
             <Search className="w-4 h-4" /> Aday Bul (İşveren)
           </button>
           <button 
             onClick={() => setActiveTab('share')}
-            className={`flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-bold transition-all ${activeTab === 'share' ? 'bg-[#0051d5] text-white shadow-md' : 'text-[#45464d] hover:text-[#0b1c30]'}`}
+            className={`flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-bold transition-all cursor-pointer ${activeTab === 'share' ? 'bg-[#0051d5] text-white shadow-md' : 'text-[#45464d] hover:text-[#0b1c30]'}`}
           >
             <Users className="w-4 h-4" /> Profilimi Paylaş (Aday)
           </button>
@@ -289,7 +306,7 @@ export default function CVPoolPage() {
                       <Search className="w-4 h-4 text-[#76777d] absolute left-3 top-3" />
                       <input 
                         type="text"
-                        placeholder="Örn: Frontend, Python, Sales"
+                        placeholder="Örn: Yazılımcı, Frontend, Python"
                         value={searchTitle}
                         onChange={(e) => setSearchTitle(e.target.value)}
                         className="w-full h-10 pl-9 pr-4 bg-white border border-[#c6c6cd] rounded-xl text-sm text-[#0b1c30] placeholder-[#76777d] focus:outline-none focus:border-[#0051d5] focus:ring-1 focus:ring-[#0051d5]"
@@ -303,7 +320,7 @@ export default function CVPoolPage() {
                     <select
                       value={searchCity}
                       onChange={(e) => setSearchCity(e.target.value)}
-                      className="w-full h-10 px-3 bg-white border border-[#c6c6cd] rounded-xl text-sm text-[#0b1c30] focus:outline-none focus:border-[#0051d5]"
+                      className="w-full h-10 px-3 bg-white border border-[#c6c6cd] rounded-xl text-sm text-[#0b1c30] focus:outline-none focus:border-[#0051d5] cursor-pointer"
                     >
                       {CITIES.map((c) => (
                         <option key={c} value={c}>{c}</option>
@@ -318,7 +335,7 @@ export default function CVPoolPage() {
                       <MapPin className="w-4 h-4 text-[#76777d] absolute left-3 top-3" />
                       <input 
                         type="text"
-                        placeholder="Örn: Kadıköy, Çankaya"
+                        placeholder="Örn: Antakya, Kadıköy, Çankaya"
                         value={searchDistrict}
                         onChange={(e) => setSearchDistrict(e.target.value)}
                         className="w-full h-10 pl-9 pr-4 bg-white border border-[#c6c6cd] rounded-xl text-sm text-[#0b1c30] placeholder-[#76777d] focus:outline-none focus:border-[#0051d5] focus:ring-1 focus:ring-[#0051d5]"
@@ -332,7 +349,7 @@ export default function CVPoolPage() {
                     <select
                       value={searchWorkType}
                       onChange={(e) => setSearchWorkType(e.target.value)}
-                      className="w-full h-10 px-3 bg-white border border-[#c6c6cd] rounded-xl text-sm text-[#0b1c30] focus:outline-none focus:border-[#0051d5]"
+                      className="w-full h-10 px-3 bg-white border border-[#c6c6cd] rounded-xl text-sm text-[#0b1c30] focus:outline-none focus:border-[#0051d5] cursor-pointer"
                     >
                       <option value="Tümü">Tümü</option>
                       <option value="Remote">Uzaktan (Remote)</option>
@@ -347,7 +364,7 @@ export default function CVPoolPage() {
               <div className="lg:col-span-3 space-y-6">
                 <div className="flex items-center justify-between">
                   <p className="text-sm font-semibold text-[#45464d]">
-                    Toplam <strong>{filteredCvs.length}</strong> aday kriterlerinize uygun bulundu.
+                    Kriterlerinize uygun <strong>{filteredCvs.length}</strong> aday bulundu.
                   </p>
                 </div>
 
@@ -356,7 +373,7 @@ export default function CVPoolPage() {
                     <Users className="w-12 h-12 text-[#76777d] mx-auto mb-4" />
                     <h3 className="font-bold text-[#0b1c30] text-lg">Aday Bulunamadı</h3>
                     <p className="text-[#45464d] text-sm mt-1 max-w-md mx-auto">
-                      Kriterlerinize uygun paylaşılan bir CV bulunamadı. Filtrelerinizi temizleyerek veya daha genel kelimeler aratarak tekrar deneyebilirsiniz.
+                      Belirtilen şehir, ilçe veya unvan kriterlerine göre havuzda paylaşılmış bir CV bulunamadı. Filtreleri değiştirerek tekrar deneyebilirsiniz.
                     </p>
                   </div>
                 ) : (
@@ -366,6 +383,11 @@ export default function CVPoolPage() {
                       const preferences = cv.data?.preferences || {};
                       const skills = cv.data?.skills || [];
                       const formattedUpdated = cv.updated_at ? new Date(cv.updated_at).toLocaleDateString('tr-TR') : 'Bugün';
+
+                      // Determine contact details
+                      const emailToUse = preferences.contact_email || personal.email;
+                      const phoneToUse = preferences.contact_phone || personal.phone;
+                      const cleanPhone = phoneToUse ? phoneToUse.replace(/\D/g, '') : '';
 
                       return (
                         <div key={cv.id} className="bg-white border border-[#c6c6cd] rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between group">
@@ -388,21 +410,21 @@ export default function CVPoolPage() {
                             {/* Details List */}
                             <div className="space-y-2 mb-5">
                               <div className="flex items-center gap-2 text-xs font-semibold text-[#45464d]">
-                                <MapPin className="w-4 h-4 text-[#76777d]" />
-                                <span>
-                                  Tercih Ettiği Yer: <strong>{preferences.preferred_cities?.join(', ') || personal.location || 'İstanbul'}</strong> 
+                                <MapPin className="w-4 h-4 text-[#76777d] shrink-0" />
+                                <span className="line-clamp-1">
+                                  Konum: <strong>{preferences.preferred_cities?.join(', ') || personal.location || 'Belirtilmedi'}</strong> 
                                   {preferences.preferred_districts && ` (${preferences.preferred_districts})`}
                                 </span>
                               </div>
                               <div className="flex items-center gap-2 text-xs font-semibold text-[#45464d]">
-                                <Briefcase className="w-4 h-4 text-[#76777d]" />
+                                <Briefcase className="w-4 h-4 text-[#76777d] shrink-0" />
                                 <span>
-                                  Çalışma Şekli: <strong>{preferences.work_types?.join(', ') || 'Remote'}</strong>
+                                  Çalışma: <strong>{preferences.work_types?.join(', ') || 'Remote'}</strong>
                                 </span>
                               </div>
                               {preferences.expected_salary > 0 && (
                                 <div className="flex items-center gap-2 text-xs font-semibold text-[#45464d]">
-                                  <DollarSign className="w-4 h-4 text-[#76777d]" />
+                                  <DollarSign className="w-4 h-4 text-[#76777d] shrink-0" />
                                   <span>
                                     Maaş Beklentisi: <strong>₺{preferences.expected_salary.toLocaleString('tr-TR')} / ay</strong>
                                   </span>
@@ -413,41 +435,66 @@ export default function CVPoolPage() {
                             {/* Skills Tags */}
                             {skills.length > 0 && (
                               <div className="flex flex-wrap gap-1.5 mb-6">
-                                {skills.slice(0, 5).map((skill: string) => (
+                                {skills.slice(0, 4).map((skill: string) => (
                                   <span key={skill} className="bg-[#e5eeff] text-[#0051d5] border border-[#d3e4fe] px-2 py-0.5 rounded text-[10px] font-bold">
                                     {skill}
                                   </span>
                                 ))}
-                                {skills.length > 5 && (
+                                {skills.length > 4 && (
                                   <span className="bg-[#f8f9ff] text-[#45464d] border border-[#c6c6cd] px-2 py-0.5 rounded text-[10px] font-bold">
-                                    +{skills.length - 5} daha
+                                    +{skills.length - 4}
                                   </span>
                                 )}
                               </div>
                             )}
                           </div>
 
-                          {/* Action Buttons */}
-                          <div className="flex items-center gap-2 pt-4 border-t border-[#c6c6cd]/50">
-                            <a 
-                              href={`/cv/${cv.slug || cv.id}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex-1 h-9 rounded-lg border border-[#c6c6cd] hover:border-[#0051d5] text-[#0b1c30] hover:text-[#0051d5] text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
-                            >
-                              CV'yi Gör <ExternalLink className="w-3.5 h-3.5" />
-                            </a>
-                            {cv.pdf_url && (
+                          {/* Action & Contact Buttons */}
+                          <div className="space-y-3 pt-4 border-t border-[#c6c6cd]/50">
+                            {/* CV View Link */}
+                            <div className="flex gap-2">
                               <a 
-                                href={cv.pdf_url}
+                                href={`/cv/${cv.slug || cv.id}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="h-9 w-9 rounded-lg bg-[#0051d5]/10 hover:bg-[#0051d5]/20 text-[#0051d5] flex items-center justify-center transition-colors shrink-0"
-                                title="PDF Olarak İndir"
+                                className="flex-1 h-9 rounded-lg border border-[#c6c6cd] hover:border-[#0051d5] text-[#0b1c30] hover:text-[#0051d5] text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer bg-white"
                               >
-                                <Download className="w-4 h-4" />
+                                CV'yi Gör <ExternalLink className="w-3.5 h-3.5" />
                               </a>
-                            )}
+                              {cv.pdf_url && (
+                                <a 
+                                  href={cv.pdf_url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="h-9 w-9 rounded-lg bg-[#0051d5]/10 hover:bg-[#0051d5]/20 text-[#0051d5] flex items-center justify-center transition-colors shrink-0 cursor-pointer"
+                                  title="PDF İndir"
+                                >
+                                  <Download className="w-4 h-4" />
+                                </a>
+                              )}
+                            </div>
+
+                            {/* Direct Contact Buttons */}
+                            <div className="flex gap-2">
+                              {emailToUse && (
+                                <a 
+                                  href={`mailto:${emailToUse}?subject=CVio Havuzu - İş Başvurusu ve İletişim`}
+                                  className="flex-1 h-9 rounded-lg bg-[#eff4ff] hover:bg-[#0051d5]/15 text-[#0051d5] text-xs font-bold flex items-center justify-center gap-1.5 transition-colors border border-[#0051d5]/20 cursor-pointer"
+                                >
+                                  <Mail className="w-3.5 h-3.5" /> E-posta Gönder
+                                </a>
+                              )}
+                              {phoneToUse && (
+                                <a 
+                                  href={`https://wa.me/${cleanPhone.startsWith('90') ? cleanPhone : '90' + cleanPhone}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="flex-1 h-9 rounded-lg bg-emerald-50 hover:bg-emerald-100/80 text-emerald-700 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors border border-emerald-600/20 cursor-pointer"
+                                >
+                                  <Phone className="w-3.5 h-3.5" /> WhatsApp'tan Yaz
+                                </a>
+                              )}
+                            </div>
                           </div>
                         </div>
                       );
@@ -489,10 +536,10 @@ export default function CVPoolPage() {
                     <select
                       value={selectedCvId}
                       onChange={(e) => handleCvChange(e.target.value)}
-                      className="w-full h-11 px-3 bg-white border border-[#c6c6cd] rounded-xl text-sm text-[#0b1c30] focus:outline-none focus:border-[#0051d5]"
+                      className="w-full h-11 px-3 bg-white border border-[#c6c6cd] rounded-xl text-sm text-[#0b1c30] focus:outline-none focus:border-[#0051d5] cursor-pointer"
                     >
                       {userCvs.map((c) => (
-                        <option key={c.id} value={c.id}>{c.title} {c.is_public ? '(Şu an Havuzda)' : ''}</option>
+                        <option key={c.id} value={c.id}>{c.title} {c.data?.in_pool ? '(Şu an Havuzda)' : ''}</option>
                       ))}
                     </select>
                   </div>
@@ -500,14 +547,14 @@ export default function CVPoolPage() {
                   {/* Public Status Toggle */}
                   <div className="bg-[#f8f9ff] border border-[#c6c6cd] rounded-xl p-4 flex items-center justify-between">
                     <div>
-                      <h4 className="text-[#0b1c30] font-bold text-sm">CV Havuzunda Listelenmek İstiyorum</h4>
+                      <h4 className="text-[#0b1c30] font-bold text-sm">Bu CV'yi CV Havuzuna Gönder</h4>
                       <p className="text-xs text-[#76777d] mt-0.5">
-                        Açık konuma getirirseniz CV'niz ve iş tercihleriniz işverenler tarafından aranabilir olacaktır.
+                        Açık konuma getirirseniz bu CV'niz işverenlerin aday arama motorunda listelenecektir.
                       </p>
                     </div>
                     <button 
                       onClick={() => setSharingActive(!sharingActive)}
-                      className="focus:outline-none transition-transform active:scale-95"
+                      className="focus:outline-none transition-transform active:scale-95 cursor-pointer"
                     >
                       {sharingActive ? (
                         <ToggleRight className="w-12 h-12 text-[#0051d5] fill-current" />
@@ -525,45 +572,72 @@ export default function CVPoolPage() {
                       <label className="block text-xs font-bold text-[#0b1c30] uppercase tracking-wider mb-2">Hedef Pozisyon / Unvan</label>
                       <input 
                         type="text"
-                        placeholder="Örn: Kıdemli Full-Stack Geliştirici, Dijital Pazarlama Uzmanı"
+                        placeholder="Örn: Frontend Yazılımcı, Kıdemli Python Geliştirici"
                         value={targetTitle}
                         onChange={(e) => setTargetTitle(e.target.value)}
                         className="w-full h-11 px-4 bg-white border border-[#c6c6cd] rounded-xl text-sm text-[#0b1c30] placeholder-[#76777d] focus:outline-none focus:border-[#0051d5]"
                       />
                     </div>
 
-                    {/* Preferred cities */}
-                    <div>
-                      <label className="block text-xs font-bold text-[#0b1c30] uppercase tracking-wider mb-2">
-                        Çalışmak İstediğiniz Şehir(ler)
-                      </label>
-                      <input 
-                        type="text"
-                        placeholder="Örn: İstanbul, İzmir, Ankara (Virgülle ayırın)"
-                        value={preferredCities}
-                        onChange={(e) => setPreferredCities(e.target.value)}
-                        className="w-full h-11 px-4 bg-white border border-[#c6c6cd] rounded-xl text-sm text-[#0b1c30] placeholder-[#76777d] focus:outline-none focus:border-[#0051d5]"
-                      />
-                      <span className="text-[10px] font-semibold text-[#76777d] mt-1 block">
-                        Birden fazla şehir eklemek için aralarına virgül koyun.
-                      </span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {/* Preferred cities */}
+                      <div>
+                        <label className="block text-xs font-bold text-[#0b1c30] uppercase tracking-wider mb-2">
+                          Çalışmak İstediğiniz Şehir
+                        </label>
+                        <input 
+                          type="text"
+                          placeholder="Örn: Hatay, İstanbul, Ankara"
+                          value={preferredCities}
+                          onChange={(e) => setPreferredCities(e.target.value)}
+                          className="w-full h-11 px-4 bg-white border border-[#c6c6cd] rounded-xl text-sm text-[#0b1c30] placeholder-[#76777d] focus:outline-none focus:border-[#0051d5]"
+                        />
+                      </div>
+
+                      {/* Preferred districts */}
+                      <div>
+                        <label className="block text-xs font-bold text-[#0b1c30] uppercase tracking-wider mb-2">
+                          Çalışmak İstediğiniz İlçe
+                        </label>
+                        <input 
+                          type="text"
+                          placeholder="Örn: Antakya, Kadıköy, Çankaya"
+                          value={preferredDistricts}
+                          onChange={(e) => setPreferredDistricts(e.target.value)}
+                          className="w-full h-11 px-4 bg-white border border-[#c6c6cd] rounded-xl text-sm text-[#0b1c30] placeholder-[#76777d] focus:outline-none focus:border-[#0051d5]"
+                        />
+                      </div>
                     </div>
 
-                    {/* Preferred districts */}
-                    <div>
-                      <label className="block text-xs font-bold text-[#0b1c30] uppercase tracking-wider mb-2">
-                        Çalışmak İstediğiniz İlçe(ler)
-                      </label>
-                      <input 
-                        type="text"
-                        placeholder="Örn: Kadıköy, Üsküdar, Çankaya"
-                        value={preferredDistricts}
-                        onChange={(e) => setPreferredDistricts(e.target.value)}
-                        className="w-full h-11 px-4 bg-white border border-[#c6c6cd] rounded-xl text-sm text-[#0b1c30] placeholder-[#76777d] focus:outline-none focus:border-[#0051d5]"
-                      />
-                      <span className="text-[10px] font-semibold text-[#76777d] mt-1 block">
-                        Spesifik çalışmak istediğiniz semt veya ilçeleri detaylı olarak buraya yazabilirsiniz.
-                      </span>
+                    {/* Contact Details Configuration */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                      <div>
+                        <label className="block text-xs font-bold text-[#0b1c30] uppercase tracking-wider mb-2">
+                          İletişim E-posta Adresi
+                        </label>
+                        <input 
+                          type="email"
+                          placeholder="Orn: aday@posta.com"
+                          value={contactEmail}
+                          onChange={(e) => setContactEmail(e.target.value)}
+                          className="w-full h-11 px-4 bg-white border border-[#c6c6cd] rounded-xl text-sm text-[#0b1c30] placeholder-[#76777d] focus:outline-none focus:border-[#0051d5]"
+                        />
+                        <span className="text-[9px] text-[#76777d] mt-1 block">İşverenlerin size mail göndereceği adres.</span>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-[#0b1c30] uppercase tracking-wider mb-2">
+                          İletişim Telefon Numarası
+                        </label>
+                        <input 
+                          type="text"
+                          placeholder="Örn: 5551234567"
+                          value={contactPhone}
+                          onChange={(e) => setContactPhone(e.target.value)}
+                          className="w-full h-11 px-4 bg-white border border-[#c6c6cd] rounded-xl text-sm text-[#0b1c30] placeholder-[#76777d] focus:outline-none focus:border-[#0051d5]"
+                        />
+                        <span className="text-[9px] text-[#76777d] mt-1 block">WhatsApp yönlendirmesi için telefon numaranız.</span>
+                      </div>
                     </div>
 
                     {/* Expected Minimum Salary */}
@@ -590,7 +664,7 @@ export default function CVPoolPage() {
                             key={type}
                             type="button"
                             onClick={() => toggleWorkType(type)}
-                            className={`flex-1 h-11 rounded-xl text-xs font-bold border transition-all flex items-center justify-center gap-1.5 ${workTypes.includes(type) ? 'bg-[#0051d5]/10 border-[#0051d5] text-[#0051d5]' : 'bg-white border-[#c6c6cd] text-[#45464d] hover:bg-[#f8f9ff]'}`}
+                            className={`flex-1 h-11 rounded-xl text-xs font-bold border transition-all flex items-center justify-center gap-1.5 cursor-pointer ${workTypes.includes(type) ? 'bg-[#0051d5]/10 border-[#0051d5] text-[#0051d5]' : 'bg-white border-[#c6c6cd] text-[#45464d] hover:bg-[#f8f9ff]'}`}
                           >
                             {workTypes.includes(type) && <CheckCircle2 className="w-4 h-4" />}
                             {type === 'Remote' ? 'Uzaktan (Remote)' : type === 'Hybrid' ? 'Hibrit' : 'Ofis'}
@@ -605,7 +679,7 @@ export default function CVPoolPage() {
                   <button
                     onClick={saveSharingPreferences}
                     disabled={saving}
-                    className="w-full mt-6 bg-[#0051d5] text-white h-11 rounded-xl text-sm font-bold hover:bg-[#316bf3] transition-colors active:scale-[0.98] disabled:bg-[#c6c6cd] disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    className="w-full mt-6 bg-[#0051d5] text-white h-12 rounded-xl text-sm font-bold hover:bg-[#316bf3] transition-all hover:scale-[1.01] active:scale-[0.99] disabled:bg-[#c6c6cd] disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-[#0051d5]/10"
                   >
                     {saving ? (
                       <>
