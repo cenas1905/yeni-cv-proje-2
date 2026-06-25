@@ -477,10 +477,21 @@ export default function CVPoolPage() {
                       // Determine contact details
                       const emailToUse = preferences.contact_email || personal.email;
                       const phoneToUse = preferences.contact_phone || personal.phone;
-                      const cleanPhone = phoneToUse ? phoneToUse.replace(/\D/g, '') : '';
+                      
+                      let whatsappLink = '';
+                      if (phoneToUse) {
+                        let clean = phoneToUse.replace(/\D/g, '');
+                        if (clean.startsWith('0')) {
+                          clean = clean.slice(1);
+                        }
+                        if (!clean.startsWith('90') && clean.length === 10) {
+                          clean = '90' + clean;
+                        }
+                        whatsappLink = `https://wa.me/${clean}`;
+                      }
 
                       return (
-                        <div key={cv.id} className="bg-white border border-[#c6c6cd] rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between group">
+                        <div key={cv.id} className="bg-white border border-[#c6c6cd] hover:border-[#0051d5]/50 rounded-2xl p-6 shadow-sm hover:shadow-lg transition-all duration-300 hover:scale-[1.01] flex flex-col justify-between group">
                           <div>
                             {/* Profile Header */}
                             <div className="flex items-start justify-between gap-2 mb-4">
@@ -576,7 +587,7 @@ export default function CVPoolPage() {
                               )}
                               {phoneToUse && (
                                 <a 
-                                  href={`https://wa.me/${cleanPhone.startsWith('90') ? cleanPhone : '90' + cleanPhone}`}
+                                  href={whatsappLink}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="flex-1 h-9 rounded-lg bg-emerald-50 hover:bg-emerald-100/80 text-emerald-700 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors border border-emerald-600/20 cursor-pointer"
@@ -624,6 +635,43 @@ export default function CVPoolPage() {
               {/* SHARE METHOD 1: SUBMIT VIA CVIO URL */}
               {shareMethod === 'system' && (
                 <div className="space-y-6 animate-in fade-in duration-300">
+
+                  {/* Quick Fill from System CVs */}
+                  {userCvs && userCvs.length > 0 && (
+                    <div className="bg-[#f8f9ff] border border-[#c6c6cd] rounded-xl p-4 space-y-2">
+                      <label className="block text-[10px] font-bold text-[#0b1c30] uppercase tracking-wider">
+                        Sistemdeki Özgeçmişleriniz (Hızlı Doldurmak için Tıklayın)
+                      </label>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {userCvs.map((cv) => {
+                          const isSelected = cv.slug && cvUrl.includes(cv.slug);
+                          return (
+                            <button
+                              key={cv.id}
+                              type="button"
+                              onClick={() => {
+                                if (cv.slug) {
+                                  setCvUrl(`${window.location.origin}/cv/${cv.slug}`);
+                                }
+                                setTargetFullName(cv.data?.personal?.fullName || '');
+                                setTargetTitle(cv.data?.preferences?.job_title || cv.data?.personal?.headline || cv.title || '');
+                                setPreferredCities(cv.data?.preferences?.preferred_cities?.join(', ') || cv.data?.personal?.location || 'İstanbul');
+                                setPreferredDistricts(cv.data?.preferences?.preferred_districts || '');
+                                setWorkTypes(cv.data?.preferences?.work_types || ['Remote']);
+                                setExpectedSalary(cv.data?.preferences?.expected_salary?.toString() || '');
+                                setContactEmail(cv.data?.preferences?.contact_email || cv.data?.personal?.email || contactEmail);
+                                setContactPhone(cv.data?.preferences?.contact_phone || cv.data?.personal?.phone || '');
+                              }}
+                              className={`px-3 py-2 text-left text-xs rounded-lg border transition-all flex items-center justify-between gap-2 hover:bg-[#eff4ff] cursor-pointer ${isSelected ? 'border-[#0051d5] bg-[#eff4ff] text-[#0051d5] font-bold' : 'border-[#c6c6cd] bg-white text-[#45464d]'}`}
+                            >
+                              <span className="truncate">{cv.title || 'İsimsiz CV'}</span>
+                              {isSelected && <Check className="w-3.5 h-3.5 shrink-0 text-[#0051d5]" />}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
                   
                   {/* CV URL Input */}
                   <div className="space-y-2">
