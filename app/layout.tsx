@@ -20,10 +20,17 @@ export const metadata: Metadata = {
     "Yapay zeka ile 60 saniyede profesyonel CV oluşturun. ATS uyumlu şablonlar, AI kariyer koçu ve paylaşılabilir link özelliği.",
   keywords: ["cv oluşturucu", "özgeçmiş", "ai cv", "akıllı cv", "kariyer"],
   authors: [{ name: "CVio" }],
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/favicon.ico",
+  },
   openGraph: {
-    title: "CVio — AI Destekli CV Oluşturucu",
+    title: "CVio — AI Destekli CV Oluşturucu & Kariyer Koçu",
     description: "60 saniyede yapay zeka destekli profesyonel CV oluşturun.",
     type: "website",
+    siteName: "CVio",
+    url: "https://cvio-ai.com.tr",
   },
   verification: {
     google: "V5PkLzII7TU3EPkxQT2vQFoQjErMAO7b5uX-sET5LnI",
@@ -37,7 +44,21 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="tr" className={`${inter.variable} ${plusJakartaSans.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col bg-[#f8f9ff] text-[#0b1c30]">{children}</body>
+      <body className="min-h-full flex flex-col bg-[#f8f9ff] text-[#0b1c30]">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              "name": "CVio",
+              "alternateName": ["CVio AI", "CVio Özgeçmiş"],
+              "url": "https://cvio-ai.com.tr"
+            })
+          }}
+        />
+        {children}
+      </body>
     </html>
   );
 }
