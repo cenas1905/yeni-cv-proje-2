@@ -5,7 +5,8 @@ import { createClientComponentClient } from '@/lib/supabase-client';
 import { 
   Users, Search, Shield, ToggleLeft, ToggleRight, 
   MapPin, Briefcase, FileText, Download, ExternalLink,
-  DollarSign, Sparkles, CheckCircle2, Filter, Mail, Phone
+  DollarSign, Sparkles, CheckCircle2, Filter, Mail, Phone,
+  Upload, Check
 } from 'lucide-react';
 
 const CITIES = [
@@ -23,8 +24,10 @@ const CITIES = [
 export default function CVPoolPage() {
   const supabase = createClientComponentClient();
   const [activeTab, setActiveTab] = useState<'search' | 'share'>('search');
+  const [shareMethod, setShareMethod] = useState<'system' | 'external'>('system');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   // User session & profile state
   const [userId, setUserId] = useState<string | null>(null);
@@ -41,7 +44,7 @@ export default function CVPoolPage() {
   const [searchDistrict, setSearchDistrict] = useState('');
   const [searchWorkType, setSearchWorkType] = useState('Tümü');
 
-  // Candidate sharing preferences state
+  // Candidate sharing preferences state (System CV)
   const [sharingActive, setSharingActive] = useState(false);
   const [preferredCities, setPreferredCities] = useState<string>('İstanbul');
   const [preferredDistricts, setPreferredDistricts] = useState<string>('');
@@ -51,12 +54,27 @@ export default function CVPoolPage() {
   const [contactEmail, setContactEmail] = useState<string>('');
   const [contactPhone, setContactPhone] = useState<string>('');
 
+  // External PDF upload states
+  const [pdfBase64, setPdfBase64] = useState<string>('');
+  const [pdfFileName, setPdfFileName] = useState<string>('');
+  const [extFullName, setExtFullName] = useState('');
+  const [extTargetTitle, setExtTargetTitle] = useState('');
+  const [extCities, setExtCities] = useState('İstanbul');
+  const [extDistricts, setExtDistricts] = useState('');
+  const [extEmail, setExtEmail] = useState('');
+  const [extPhone, setExtPhone] = useState('');
+  const [extSalary, setExtSalary] = useState('');
+  const [extWorkTypes, setExtWorkTypes] = useState<string[]>(['Remote']);
+
   useEffect(() => {
     async function loadData() {
       setLoading(true);
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         setUserId(user.id);
+        setExtEmail(user.email || '');
+        setContactEmail(user.email || '');
+        
         // Load user's CVs
         const { data: cvs } = await supabase
           .from('cvs')
@@ -130,6 +148,96 @@ export default function CVPoolPage() {
         setContactEmail(selected.data.personal?.email || '');
         setContactPhone(selected.data.personal?.phone || '');
       }
+    }
+  };
+
+  // Handle file picker for external PDF
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.type !== 'application/pdf') {
+        alert('Lütfen sadece PDF formatında bir dosya yükleyin.');
+        e.target.value = '';
+        return;
+      }
+      if (file.size > 5242880) {
+        alert('Dosya boyutu maksimum 5MB olmalıdır.');
+        e.target.value = '';
+        return;
+      }
+      setPdfFileName(file.name);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPdfBase64(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // Submit external PDF to Pool API
+  const handleExternalUploadSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!pdfBase64) {
+      alert('Lütfen bir PDF özgeçmiş dosyası seçin.');
+      return;
+    }
+    if (!extFullName || !extTargetTitle) {
+      alert('Ad Soyad ve Hedef Pozisyon alanları zorunludur.');
+      return;
+    }
+    setUploading(true);
+
+    try {
+      const res = await fetch('/api/cv/upload-external-pdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: `${extFullName} - PDF Özgeçmiş`,
+          pdfBase64,
+          fullName: extFullName,
+          targetTitle: extTargetTitle,
+          preferredCities: extCities,
+          preferredDistricts: extDistricts,
+          contactEmail: extEmail,
+          contactPhone: extPhone,
+          expectedSalary: extSalary ? parseInt(extSalary) : 0,
+          workTypes: extWorkTypes
+        })
+      });
+
+      const result = await res.json();
+      if (!res.ok) {
+        throw new Error(result.error || 'Yükleme başarısız oldu.');
+      }
+
+      alert('Hazır PDF özgeçmişiniz başarıyla havuzda yayınlandı!');
+      
+      // Reset upload states
+      setPdfBase64('');
+      setPdfFileName('');
+      setExtFullName('');
+      setExtTargetTitle('');
+      setExtDistricts('');
+      setExtSalary('');
+
+      // Reload pool list
+      const { data: publicCvs } = await supabase
+        .from('cvs')
+        .select('id, user_id, title, slug, data, pdf_url, view_count, updated_at')
+        .eq('is_public', true);
+      if (publicCvs) {
+        const poolCvs = publicCvs.filter((cv: any) => cv.data?.in_pool === true);
+        setAllPublicCvs(poolCvs);
+        setFilteredCvs(poolCvs);
+      }
+      
+      // Switch back to search
+      setActiveTab('search');
+    } catch (err: any) {
+      console.error(err);
+      alert('Hata oluştu: ' + err.message);
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -249,6 +357,14 @@ export default function CVPoolPage() {
       setWorkTypes(workTypes.filter(t => t !== type));
     } else {
       setWorkTypes([...workTypes, type]);
+    }
+  };
+
+  const toggleExtWorkType = (type: string) => {
+    if (extWorkTypes.includes(type)) {
+      setExtWorkTypes(extWorkTypes.filter(t => t !== type));
+    } else {
+      setExtWorkTypes([...extWorkTypes, type]);
     }
   };
 
@@ -454,14 +570,14 @@ export default function CVPoolPage() {
                             {/* CV View Link */}
                             <div className="flex gap-2">
                               <a 
-                                href={`/cv/${cv.slug || cv.id}`}
+                                href={cv.data?.external_pdf ? cv.pdf_url : `/cv/${cv.slug || cv.id}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="flex-1 h-9 rounded-lg border border-[#c6c6cd] hover:border-[#0051d5] text-[#0b1c30] hover:text-[#0051d5] text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer bg-white"
                               >
-                                CV'yi Gör <ExternalLink className="w-3.5 h-3.5" />
+                                {cv.data?.external_pdf ? 'Özgeçmiş PDF\'ini Aç' : 'CV\'yi Gör'} <ExternalLink className="w-3.5 h-3.5" />
                               </a>
-                              {cv.pdf_url && (
+                              {cv.pdf_url && !cv.data?.external_pdf && (
                                 <a 
                                   href={cv.pdf_url}
                                   target="_blank"
@@ -513,184 +629,370 @@ export default function CVPoolPage() {
                 <h3 className="font-bold text-[#0b1c30] text-lg">Profilini ve İş Tercihlerini Paylaş</h3>
               </div>
 
-              {userCvs.length === 0 ? (
-                <div className="text-center py-8">
-                  <FileText className="w-12 h-12 text-[#76777d] mx-auto mb-4" />
-                  <h4 className="font-bold text-[#0b1c30] text-base">Aktif CV Bulunamadı</h4>
-                  <p className="text-[#45464d] text-sm mt-1 max-w-sm mx-auto mb-6">
-                    Arama havuzunda listelenebilmek için öncelikle en az bir tane CV oluşturmanız gerekmektedir.
-                  </p>
-                  <a 
-                    href="/dashboard/cv/new"
-                    className="inline-flex items-center gap-2 bg-[#0051d5] text-white px-5 h-10 rounded-xl text-sm font-bold hover:bg-[#316bf3] transition-colors"
-                  >
-                    Yeni CV Oluştur
-                  </a>
-                </div>
-              ) : (
-                <div className="space-y-6">
-                  
-                  {/* Select which CV to make public */}
-                  <div>
-                    <label className="block text-xs font-bold text-[#0b1c30] uppercase tracking-wider mb-2">Hangi CV'niz Paylaşılacak?</label>
-                    <select
-                      value={selectedCvId}
-                      onChange={(e) => handleCvChange(e.target.value)}
-                      className="w-full h-11 px-3 bg-white border border-[#c6c6cd] rounded-xl text-sm text-[#0b1c30] focus:outline-none focus:border-[#0051d5] cursor-pointer"
-                    >
-                      {userCvs.map((c) => (
-                        <option key={c.id} value={c.id}>{c.title} {c.data?.in_pool ? '(Şu an Havuzda)' : ''}</option>
-                      ))}
-                    </select>
-                  </div>
+              {/* Sub-tab selection for share method */}
+              <div className="flex border-b border-[#c6c6cd] mb-6">
+                <button
+                  type="button"
+                  onClick={() => setShareMethod('system')}
+                  className={`pb-3 text-sm font-bold border-b-2 px-4 transition-all cursor-pointer ${shareMethod === 'system' ? 'border-[#0051d5] text-[#0051d5]' : 'border-transparent text-[#76777d] hover:text-[#0b1c30]'}`}
+                >
+                  Sistemdeki CV'yi Paylaş
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShareMethod('external')}
+                  className={`pb-3 text-sm font-bold border-b-2 px-4 transition-all cursor-pointer ${shareMethod === 'external' ? 'border-[#0051d5] text-[#0051d5]' : 'border-transparent text-[#76777d] hover:text-[#0b1c30]'}`}
+                >
+                  Kendi Hazır PDF CV'mi Yükle
+                </button>
+              </div>
 
-                  {/* Public Status Toggle */}
-                  <div className="bg-[#f8f9ff] border border-[#c6c6cd] rounded-xl p-4 flex items-center justify-between">
-                    <div>
-                      <h4 className="text-[#0b1c30] font-bold text-sm">Bu CV'yi CV Havuzuna Gönder</h4>
-                      <p className="text-xs text-[#76777d] mt-0.5">
-                        Açık konuma getirirseniz bu CV'niz işverenlerin aday arama motorunda listelenecektir.
-                      </p>
-                    </div>
-                    <button 
-                      onClick={() => setSharingActive(!sharingActive)}
-                      className="focus:outline-none transition-transform active:scale-95 cursor-pointer"
+              {/* SHARE METHOD 1: SYSTEM BUILDER CV */}
+              {shareMethod === 'system' && (
+                userCvs.length === 0 ? (
+                  <div className="text-center py-8">
+                    <FileText className="w-12 h-12 text-[#76777d] mx-auto mb-4" />
+                    <h4 className="font-bold text-[#0b1c30] text-base">Aktif CV Bulunamadı</h4>
+                    <p className="text-[#45464d] text-sm mt-1 max-w-sm mx-auto mb-6">
+                      Arama havuzunda listelenebilmek için öncelikle en az bir tane CV oluşturmanız gerekmektedir.
+                    </p>
+                    <a 
+                      href="/dashboard/cv/new"
+                      className="inline-flex items-center gap-2 bg-[#0051d5] text-white px-5 h-10 rounded-xl text-sm font-bold hover:bg-[#316bf3] transition-colors"
                     >
-                      {sharingActive ? (
-                        <ToggleRight className="w-12 h-12 text-[#0051d5] fill-current" />
+                      Yeni CV Oluştur
+                    </a>
+                  </div>
+                ) : (
+                  <div className="space-y-6 animate-in fade-in duration-300">
+                    
+                    {/* Select which CV to make public */}
+                    <div>
+                      <label className="block text-xs font-bold text-[#0b1c30] uppercase tracking-wider mb-2">Hangi CV'niz Paylaşılacak?</label>
+                      <div className="flex gap-2">
+                        <select
+                          value={selectedCvId}
+                          onChange={(e) => handleCvChange(e.target.value)}
+                          className="flex-1 h-11 px-3 bg-white border border-[#c6c6cd] rounded-xl text-sm text-[#0b1c30] focus:outline-none focus:border-[#0051d5] cursor-pointer"
+                        >
+                          {userCvs.map((c) => (
+                            <option key={c.id} value={c.id}>{c.title} {c.data?.in_pool ? '(Şu an Havuzda)' : ''}</option>
+                          ))}
+                        </select>
+                        <a 
+                          href={`/dashboard/cv/${selectedCvId}/edit`}
+                          className="h-11 px-4 bg-[#eff4ff] hover:bg-[#0051d5]/10 border border-[#0051d5]/20 text-[#0051d5] rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-colors shrink-0"
+                        >
+                          Düzenle
+                        </a>
+                      </div>
+                    </div>
+
+                    {/* Public Status Toggle */}
+                    <div className="bg-[#f8f9ff] border border-[#c6c6cd] rounded-xl p-4 flex items-center justify-between">
+                      <div>
+                        <h4 className="text-[#0b1c30] font-bold text-sm">Bu CV'yi CV Havuzuna Gönder</h4>
+                        <p className="text-xs text-[#76777d] mt-0.5">
+                          Açık konuma getirirseniz bu CV'niz işverenlerin aday arama motorunda listelenecektir.
+                        </p>
+                      </div>
+                      <button 
+                        onClick={() => setSharingActive(!sharingActive)}
+                        className="focus:outline-none transition-transform active:scale-95 cursor-pointer"
+                      >
+                        {sharingActive ? (
+                          <ToggleRight className="w-12 h-12 text-[#0051d5] fill-current" />
+                        ) : (
+                          <ToggleLeft className="w-12 h-12 text-[#76777d]" />
+                        )}
+                      </button>
+                    </div>
+
+                    {/* Preferences Form Fields */}
+                    <div className="space-y-5 pt-4 border-t border-[#c6c6cd]/50">
+                      
+                      {/* Expected job title */}
+                      <div>
+                        <label className="block text-xs font-bold text-[#0b1c30] uppercase tracking-wider mb-2">Hedef Pozisyon / Unvan</label>
+                        <input 
+                          type="text"
+                          placeholder="Örn: Frontend Yazılımcı, Kıdemli Python Geliştirici"
+                          value={targetTitle}
+                          onChange={(e) => setTargetTitle(e.target.value)}
+                          className="w-full h-11 px-4 bg-white border border-[#c6c6cd] rounded-xl text-sm text-[#0b1c30] placeholder-[#76777d] focus:outline-none focus:border-[#0051d5]"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {/* Preferred cities */}
+                        <div>
+                          <label className="block text-xs font-bold text-[#0b1c30] uppercase tracking-wider mb-2">
+                            Çalışmak İstediğiniz Şehir
+                          </label>
+                          <input 
+                            type="text"
+                            placeholder="Örn: Hatay, İstanbul, Ankara"
+                            value={preferredCities}
+                            onChange={(e) => setPreferredCities(e.target.value)}
+                            className="w-full h-11 px-4 bg-white border border-[#c6c6cd] rounded-xl text-sm text-[#0b1c30] placeholder-[#76777d] focus:outline-none focus:border-[#0051d5]"
+                          />
+                        </div>
+
+                        {/* Preferred districts */}
+                        <div>
+                          <label className="block text-xs font-bold text-[#0b1c30] uppercase tracking-wider mb-2">
+                            Çalışmak İstediğiniz İlçe
+                          </label>
+                          <input 
+                            type="text"
+                            placeholder="Örn: Antakya, Kadıköy, Çankaya"
+                            value={preferredDistricts}
+                            onChange={(e) => setPreferredDistricts(e.target.value)}
+                            className="w-full h-11 px-4 bg-white border border-[#c6c6cd] rounded-xl text-sm text-[#0b1c30] placeholder-[#76777d] focus:outline-none focus:border-[#0051d5]"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Contact Details Configuration */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                        <div>
+                          <label className="block text-xs font-bold text-[#0b1c30] uppercase tracking-wider mb-2">
+                            İletişim E-posta Adresi
+                          </label>
+                          <input 
+                            type="email"
+                            placeholder="Örn: aday@posta.com"
+                            value={contactEmail}
+                            onChange={(e) => setContactEmail(e.target.value)}
+                            className="w-full h-11 px-4 bg-white border border-[#c6c6cd] rounded-xl text-sm text-[#0b1c30] placeholder-[#76777d] focus:outline-none focus:border-[#0051d5]"
+                          />
+                          <span className="text-[9px] text-[#76777d] mt-1 block">İşverenlerin size mail göndereceği adres.</span>
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-[#0b1c30] uppercase tracking-wider mb-2">
+                            İletişim Telefon Numarası
+                          </label>
+                          <input 
+                            type="text"
+                            placeholder="Örn: 5551234567"
+                            value={contactPhone}
+                            onChange={(e) => setContactPhone(e.target.value)}
+                            className="w-full h-11 px-4 bg-white border border-[#c6c6cd] rounded-xl text-sm text-[#0b1c30] placeholder-[#76777d] focus:outline-none focus:border-[#0051d5]"
+                          />
+                          <span className="text-[9px] text-[#76777d] mt-1 block">WhatsApp yönlendirmesi için telefon numaranız.</span>
+                        </div>
+                      </div>
+
+                      {/* Expected Minimum Salary */}
+                      <div>
+                        <label className="block text-xs font-bold text-[#0b1c30] uppercase tracking-wider mb-2">Beklenen Aylık Net Ücret (İsteğe Bağlı)</label>
+                        <div className="relative">
+                          <span className="absolute left-4 top-3 text-[#76777d] text-sm font-bold">₺</span>
+                          <input 
+                            type="number"
+                            placeholder="Örn: 45000"
+                            value={expectedSalary}
+                            onChange={(e) => setExpectedSalary(e.target.value)}
+                            className="w-full h-11 pl-8 pr-4 bg-white border border-[#c6c6cd] rounded-xl text-sm text-[#0b1c30] placeholder-[#76777d] focus:outline-none focus:border-[#0051d5]"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Work type checkboxes */}
+                      <div>
+                        <label className="block text-xs font-bold text-[#0b1c30] uppercase tracking-wider mb-2">Kabul Ettiğiniz Çalışma Şekilleri</label>
+                        <div className="flex gap-4">
+                          {['Remote', 'Hybrid', 'Office'].map((type) => (
+                            <button
+                              key={type}
+                              type="button"
+                              onClick={() => toggleWorkType(type)}
+                              className={`flex-1 h-11 rounded-xl text-xs font-bold border transition-all flex items-center justify-center gap-1.5 cursor-pointer ${workTypes.includes(type) ? 'bg-[#0051d5]/10 border-[#0051d5] text-[#0051d5]' : 'bg-white border-[#c6c6cd] text-[#45464d] hover:bg-[#f8f9ff]'}`}
+                            >
+                              {workTypes.includes(type) && <CheckCircle2 className="w-4 h-4" />}
+                              {type === 'Remote' ? 'Uzaktan (Remote)' : type === 'Hybrid' ? 'Hibrit' : 'Ofis'}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                    </div>
+
+                    {/* Save Button */}
+                    <button
+                      onClick={saveSharingPreferences}
+                      disabled={saving}
+                      className="w-full mt-6 bg-[#0051d5] text-white h-12 rounded-xl text-sm font-bold hover:bg-[#316bf3] transition-all hover:scale-[1.01] active:scale-[0.99] disabled:bg-[#c6c6cd] disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-[#0051d5]/10"
+                    >
+                      {saving ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                          Kaydediliyor...
+                        </>
                       ) : (
-                        <ToggleLeft className="w-12 h-12 text-[#76777d]" />
+                        'Paylaşım Ayarlarını Kaydet'
                       )}
                     </button>
                   </div>
+                )
+              )}
 
-                  {/* Preferences Form Fields */}
-                  <div className="space-y-5 pt-4 border-t border-[#c6c6cd]/50">
-                    
-                    {/* Expected job title */}
-                    <div>
-                      <label className="block text-xs font-bold text-[#0b1c30] uppercase tracking-wider mb-2">Hedef Pozisyon / Unvan</label>
-                      <input 
-                        type="text"
-                        placeholder="Örn: Frontend Yazılımcı, Kıdemli Python Geliştirici"
-                        value={targetTitle}
-                        onChange={(e) => setTargetTitle(e.target.value)}
-                        className="w-full h-11 px-4 bg-white border border-[#c6c6cd] rounded-xl text-sm text-[#0b1c30] placeholder-[#76777d] focus:outline-none focus:border-[#0051d5]"
-                      />
+              {/* SHARE METHOD 2: UPLOAD EXTERNAL PDF */}
+              {shareMethod === 'external' && (
+                <form onSubmit={handleExternalUploadSubmit} className="space-y-5 animate-in fade-in duration-300">
+                  
+                  {/* File Upload Input */}
+                  <div className="border-2 border-dashed border-[#c6c6cd] rounded-2xl p-8 text-center bg-[#f8f9ff] hover:bg-[#eff4ff]/50 transition-colors relative group">
+                    <input 
+                      type="file" 
+                      accept="application/pdf"
+                      onChange={handleFileChange}
+                      required={!pdfBase64}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" 
+                    />
+                    <div className="flex flex-col items-center justify-center pointer-events-none">
+                      <div className="w-12 h-12 rounded-full bg-[#0051d5]/10 flex items-center justify-center text-[#0051d5] mb-3 group-hover:scale-110 transition-transform">
+                        <Upload className="w-6 h-6" />
+                      </div>
+                      {pdfFileName ? (
+                        <div className="text-sm font-bold text-[#0b1c30] flex items-center gap-1.5">
+                          <Check className="w-4 h-4 text-emerald-600" /> {pdfFileName}
+                        </div>
+                      ) : (
+                        <>
+                          <p className="text-sm font-bold text-[#0b1c30]">Özgeçmiş Dosyanızı Sürükleyin veya Seçin</p>
+                          <p className="text-xs text-[#76777d] mt-1">Yalnızca PDF formatı (Maksimum 5MB)</p>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Form fields for candidate details */}
+                  <div className="space-y-4 pt-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-bold text-[#0b1c30] uppercase tracking-wider mb-2">Adınız Soyadınız</label>
+                        <input 
+                          type="text"
+                          required
+                          placeholder="Örn: Ahmet Yılmaz"
+                          value={extFullName}
+                          onChange={(e) => setExtFullName(e.target.value)}
+                          className="w-full h-11 px-4 bg-white border border-[#c6c6cd] rounded-xl text-sm text-[#0b1c30] placeholder-[#76777d] focus:outline-none focus:border-[#0051d5]"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-[#0b1c30] uppercase tracking-wider mb-2">Hedef Pozisyon / Unvan</label>
+                        <input 
+                          type="text"
+                          required
+                          placeholder="Örn: Senior Frontend Geliştirici"
+                          value={extTargetTitle}
+                          onChange={(e) => setExtTargetTitle(e.target.value)}
+                          className="w-full h-11 px-4 bg-white border border-[#c6c6cd] rounded-xl text-sm text-[#0b1c30] placeholder-[#76777d] focus:outline-none focus:border-[#0051d5]"
+                        />
+                      </div>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {/* Preferred cities */}
                       <div>
-                        <label className="block text-xs font-bold text-[#0b1c30] uppercase tracking-wider mb-2">
-                          Çalışmak İstediğiniz Şehir
-                        </label>
+                        <label className="block text-xs font-bold text-[#0b1c30] uppercase tracking-wider mb-2">Çalışmak İstediğiniz Şehir</label>
                         <input 
                           type="text"
-                          placeholder="Örn: Hatay, İstanbul, Ankara"
-                          value={preferredCities}
-                          onChange={(e) => setPreferredCities(e.target.value)}
+                          required
+                          placeholder="Örn: Hatay, İstanbul (Virgülle ayırın)"
+                          value={extCities}
+                          onChange={(e) => setExtCities(e.target.value)}
                           className="w-full h-11 px-4 bg-white border border-[#c6c6cd] rounded-xl text-sm text-[#0b1c30] placeholder-[#76777d] focus:outline-none focus:border-[#0051d5]"
                         />
                       </div>
-
-                      {/* Preferred districts */}
                       <div>
-                        <label className="block text-xs font-bold text-[#0b1c30] uppercase tracking-wider mb-2">
-                          Çalışmak İstediğiniz İlçe
-                        </label>
+                        <label className="block text-xs font-bold text-[#0b1c30] uppercase tracking-wider mb-2">Çalışmak İstediğiniz İlçe</label>
                         <input 
                           type="text"
-                          placeholder="Örn: Antakya, Kadıköy, Çankaya"
-                          value={preferredDistricts}
-                          onChange={(e) => setPreferredDistricts(e.target.value)}
+                          placeholder="Örn: Antakya, Kadıköy"
+                          value={extDistricts}
+                          onChange={(e) => setExtDistricts(e.target.value)}
                           className="w-full h-11 px-4 bg-white border border-[#c6c6cd] rounded-xl text-sm text-[#0b1c30] placeholder-[#76777d] focus:outline-none focus:border-[#0051d5]"
                         />
                       </div>
                     </div>
 
-                    {/* Contact Details Configuration */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-xs font-bold text-[#0b1c30] uppercase tracking-wider mb-2">
-                          İletişim E-posta Adresi
-                        </label>
+                        <label className="block text-xs font-bold text-[#0b1c30] uppercase tracking-wider mb-2">İletişim E-posta Adresi</label>
                         <input 
                           type="email"
-                          placeholder="Orn: aday@posta.com"
-                          value={contactEmail}
-                          onChange={(e) => setContactEmail(e.target.value)}
+                          required
+                          placeholder="Örn: ahmet@posta.com"
+                          value={extEmail}
+                          onChange={(e) => setExtEmail(e.target.value)}
                           className="w-full h-11 px-4 bg-white border border-[#c6c6cd] rounded-xl text-sm text-[#0b1c30] placeholder-[#76777d] focus:outline-none focus:border-[#0051d5]"
                         />
-                        <span className="text-[9px] text-[#76777d] mt-1 block">İşverenlerin size mail göndereceği adres.</span>
                       </div>
-
                       <div>
-                        <label className="block text-xs font-bold text-[#0b1c30] uppercase tracking-wider mb-2">
-                          İletişim Telefon Numarası
-                        </label>
+                        <label className="block text-xs font-bold text-[#0b1c30] uppercase tracking-wider mb-2">İletişim Telefon Numarası</label>
                         <input 
                           type="text"
+                          required
                           placeholder="Örn: 5551234567"
-                          value={contactPhone}
-                          onChange={(e) => setContactPhone(e.target.value)}
+                          value={extPhone}
+                          onChange={(e) => setExtPhone(e.target.value)}
                           className="w-full h-11 px-4 bg-white border border-[#c6c6cd] rounded-xl text-sm text-[#0b1c30] placeholder-[#76777d] focus:outline-none focus:border-[#0051d5]"
                         />
-                        <span className="text-[9px] text-[#76777d] mt-1 block">WhatsApp yönlendirmesi için telefon numaranız.</span>
                       </div>
                     </div>
 
-                    {/* Expected Minimum Salary */}
-                    <div>
-                      <label className="block text-xs font-bold text-[#0b1c30] uppercase tracking-wider mb-2">Beklenen Aylık Net Ücret (İsteğe Bağlı)</label>
-                      <div className="relative">
-                        <span className="absolute left-4 top-3 text-[#76777d] text-sm font-bold">₺</span>
-                        <input 
-                          type="number"
-                          placeholder="Örn: 45000"
-                          value={expectedSalary}
-                          onChange={(e) => setExpectedSalary(e.target.value)}
-                          className="w-full h-11 pl-8 pr-4 bg-white border border-[#c6c6cd] rounded-xl text-sm text-[#0b1c30] placeholder-[#76777d] focus:outline-none focus:border-[#0051d5]"
-                        />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-bold text-[#0b1c30] uppercase tracking-wider mb-2">Beklenen Aylık Net Ücret (İsteğe Bağlı)</label>
+                        <div className="relative">
+                          <span className="absolute left-4 top-3 text-[#76777d] text-sm font-bold">₺</span>
+                          <input 
+                            type="number"
+                            placeholder="Örn: 50000"
+                            value={extSalary}
+                            onChange={(e) => setExtSalary(e.target.value)}
+                            className="w-full h-11 pl-8 pr-4 bg-white border border-[#c6c6cd] rounded-xl text-sm text-[#0b1c30] placeholder-[#76777d] focus:outline-none focus:border-[#0051d5]"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-[#0b1c30] uppercase tracking-wider mb-2">Kabul Edilen Çalışma Şekilleri</label>
+                        <div className="flex gap-2">
+                          {['Remote', 'Hybrid', 'Office'].map((type) => (
+                            <button
+                              key={type}
+                              type="button"
+                              onClick={() => toggleExtWorkType(type)}
+                              className={`flex-grow h-11 rounded-xl text-xs font-bold border transition-all flex items-center justify-center gap-1 cursor-pointer ${extWorkTypes.includes(type) ? 'bg-[#0051d5]/10 border-[#0051d5] text-[#0051d5]' : 'bg-white border-[#c6c6cd] text-[#45464d] hover:bg-[#f8f9ff]'}`}
+                            >
+                              {extWorkTypes.includes(type) && <CheckCircle2 className="w-3.5 h-3.5" />}
+                              {type === 'Remote' ? 'Uzaktan' : type === 'Hybrid' ? 'Hibrit' : 'Ofis'}
+                            </button>
+                          ))}
+                        </div>
                       </div>
                     </div>
-
-                    {/* Work type checkboxes */}
-                    <div>
-                      <label className="block text-xs font-bold text-[#0b1c30] uppercase tracking-wider mb-2">Kabul Ettiğiniz Çalışma Şekilleri</label>
-                      <div className="flex gap-4">
-                        {['Remote', 'Hybrid', 'Office'].map((type) => (
-                          <button
-                            key={type}
-                            type="button"
-                            onClick={() => toggleWorkType(type)}
-                            className={`flex-1 h-11 rounded-xl text-xs font-bold border transition-all flex items-center justify-center gap-1.5 cursor-pointer ${workTypes.includes(type) ? 'bg-[#0051d5]/10 border-[#0051d5] text-[#0051d5]' : 'bg-white border-[#c6c6cd] text-[#45464d] hover:bg-[#f8f9ff]'}`}
-                          >
-                            {workTypes.includes(type) && <CheckCircle2 className="w-4 h-4" />}
-                            {type === 'Remote' ? 'Uzaktan (Remote)' : type === 'Hybrid' ? 'Hibrit' : 'Ofis'}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
                   </div>
 
-                  {/* Save Button */}
+                  {/* Submit Button */}
                   <button
-                    onClick={saveSharingPreferences}
-                    disabled={saving}
-                    className="w-full mt-6 bg-[#0051d5] text-white h-12 rounded-xl text-sm font-bold hover:bg-[#316bf3] transition-all hover:scale-[1.01] active:scale-[0.99] disabled:bg-[#c6c6cd] disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-[#0051d5]/10"
+                    type="submit"
+                    disabled={uploading}
+                    className="w-full mt-4 bg-[#0051d5] text-white h-12 rounded-xl text-sm font-bold hover:bg-[#316bf3] transition-all hover:scale-[1.01] active:scale-[0.99] disabled:bg-[#c6c6cd] disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-[#0051d5]/10"
                   >
-                    {saving ? (
+                    {uploading ? (
                       <>
                         <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                        Kaydediliyor...
+                        Özgeçmiş Yükleniyor...
                       </>
                     ) : (
-                      'Paylaşım Ayarlarını Kaydet'
+                      'Özgeçmişi Yükle ve Havuza Ekle'
                     )}
                   </button>
-                </div>
+                </form>
               )}
             </div>
           )}
