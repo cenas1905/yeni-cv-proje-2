@@ -63,7 +63,7 @@ function UpgradeContent() {
 
     setLoading(true);
     try {
-      const res = await fetch('/api/stripe/create-checkout', {
+      const res = await fetch('/api/iyzico/create-checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
