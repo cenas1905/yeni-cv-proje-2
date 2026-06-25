@@ -452,6 +452,26 @@ export default function CVPoolPage() {
 
               {/* Candidates Grid */}
               <div className="lg:col-span-3 space-y-6">
+                
+                {/* CTA Banner to share profile */}
+                <div className="bg-gradient-to-r from-[#0051d5] to-[#316bf3] rounded-2xl p-6 text-white shadow-md flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div className="space-y-1">
+                    <h3 className="font-bold text-lg flex items-center gap-2">
+                      <Sparkles className="w-5 h-5 text-[#fed7aa] fill-[#fed7aa] animate-pulse shrink-0" />
+                      Kendi CV'nizi Havuza Eklemek İster Misiniz?
+                    </h3>
+                    <p className="text-xs text-blue-100 max-w-xl">
+                      Özgeçmişinizi paylaşarak işverenlerin size doğrudan e-posta veya WhatsApp üzerinden ulaşmasını sağlayın. Tamamen ücretsiz!
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setActiveTab('share')}
+                    className="bg-white text-[#0051d5] hover:bg-blue-50 px-5 py-2.5 rounded-xl text-xs font-bold transition-all shadow-sm hover:scale-[1.02] active:scale-[0.98] cursor-pointer shrink-0"
+                  >
+                    Profilimi Paylaş
+                  </button>
+                </div>
+
                 <div className="flex items-center justify-between">
                   <p className="text-sm font-semibold text-[#45464d]">
                     Kriterlerinize uygun <strong>{filteredCvs.length}</strong> aday bulundu.
