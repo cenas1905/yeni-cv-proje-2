@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createClientComponentClient } from '@/lib/supabase-client';
 import { Check, ArrowLeft, Loader2, Shield, Zap, AlertTriangle } from 'lucide-react';
+import { config } from '@/lib/config';
 
 const proFeatures = [
   'Kalıcı paylaşım bağlantısı',
@@ -63,7 +64,8 @@ function UpgradeContent() {
 
     setLoading(true);
     try {
-      const res = await fetch('/api/iyzico/create-checkout', {
+      const provider = config.paymentProvider || 'iyzico';
+      const res = await fetch(`/api/${provider}/create-checkout`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
