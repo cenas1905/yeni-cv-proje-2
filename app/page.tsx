@@ -179,10 +179,16 @@ export default function HomePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            {/* Badge */}
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 text-blue-200 border border-white/20 mb-6 backdrop-blur-md">
-              <Sparkles className="w-4 h-4" />
-              <span className="text-xs font-bold uppercase tracking-wider">Next-Gen Kariyer Araçları</span>
+            {/* Badges */}
+            <div className="flex flex-wrap items-center gap-3 mb-6">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 text-blue-200 border border-white/20 backdrop-blur-md">
+                <Sparkles className="w-4 h-4" />
+                <span className="text-xs font-bold uppercase tracking-wider">Next-Gen Kariyer Araçları</span>
+              </div>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#009485]/20 text-[#20e8d3] border border-[#009485]/30 backdrop-blur-md">
+                <Shield className="w-3.5 h-3.5" />
+                <span className="text-[10px] font-bold uppercase tracking-wider">%100 KVKK & GDPR Uyumlu</span>
+              </div>
             </div>
 
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-white leading-[1.08] tracking-tight mb-6 drop-shadow-lg">
@@ -540,24 +546,70 @@ export default function HomePage() {
       </section>
 
       {/* ─── FOOTER ─── */}
-      <footer className="border-t border-[#c6c6cd]/30 py-12 px-6 md:px-16 bg-[#f7f9fb]">
-        <div className="max-w-[1280px] mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div>
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-6 h-6 rounded-md bg-[#4648d4] flex items-center justify-center">
-                <span className="text-white font-black text-xs">C</span>
+      <footer className="border-t border-[#c6c6cd]/30 py-16 px-6 md:px-16 bg-[#f7f9fb]">
+        <div className="max-w-[1280px] mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+            <div className="md:col-span-1">
+              <div className="flex items-center gap-2 mb-6">
+                <div className="w-8 h-8 rounded-lg bg-[#4648d4] flex items-center justify-center">
+                  <span className="text-white font-black text-sm">C</span>
+                </div>
+                <span className="font-black text-xl text-[#191c1e]">CV<span className="text-[#4648d4]">io</span></span>
               </div>
-              <span className="font-black text-base text-[#191c1e]">CV<span className="text-[#4648d4]">io</span></span>
+              <p className="text-xs text-[#76777d] leading-relaxed mb-6">
+                Türkiye'nin en güvenilir, yapay zeka destekli CV ve kariyer platformu. Verileriniz KVKK ve GDPR kapsamında korunmaktadır.
+              </p>
+              <div className="flex items-center gap-3 text-xs font-bold text-[#009485] bg-[#009485]/10 px-3 py-2 rounded-lg inline-flex">
+                <Shield className="w-4 h-4" />
+                256-bit SSL Korumalı
+              </div>
             </div>
-            <p className="text-xs text-[#76777d] leading-relaxed">AI destekli CV oluşturucu ile kariyer hedeflerinize daha hızlı ulaşın.</p>
+
+            <div>
+              <h4 className="font-bold text-[#191c1e] mb-4">Şirket</h4>
+              <ul className="space-y-3">
+                <li><a href="#" className="text-sm text-[#76777d] hover:text-[#4648d4] transition-colors">Hakkımızda</a></li>
+                <li><a href="#" className="text-sm text-[#76777d] hover:text-[#4648d4] transition-colors">Kariyer</a></li>
+                <li><a href="#" className="text-sm text-[#76777d] hover:text-[#4648d4] transition-colors">İletişim</a></li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-bold text-[#191c1e] mb-4">Yasal</h4>
+              <ul className="space-y-3">
+                <li><a href="#" className="text-sm text-[#76777d] hover:text-[#4648d4] transition-colors">Kullanım Koşulları</a></li>
+                <li><a href="#" className="text-sm text-[#76777d] hover:text-[#4648d4] transition-colors">Gizlilik Politikası</a></li>
+                <li><a href="#" className="text-sm text-[#76777d] hover:text-[#4648d4] transition-colors">Mesafeli Satış Sözleşmesi</a></li>
+                <li><a href="#" className="text-sm text-[#76777d] hover:text-[#4648d4] transition-colors">İptal ve İade Koşulları</a></li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-bold text-[#191c1e] mb-4">İletişim</h4>
+              <ul className="space-y-3 text-sm text-[#76777d]">
+                <li className="flex items-start gap-2">
+                  <strong className="text-[#45464d] min-w-[50px]">Email:</strong>
+                  <a href="mailto:destek@cvio-ai.com.tr" className="hover:text-[#4648d4]">destek@cvio-ai.com.tr</a>
+                </li>
+                <li className="flex items-start gap-2">
+                  <strong className="text-[#45464d] min-w-[50px]">Adres:</strong>
+                  <span>Levent, Büyükdere Cd., 34330 <br/> Beşiktaş / İstanbul</span>
+                </li>
+                <li className="flex items-start gap-2 mt-4 text-[11px] opacity-70">
+                  <strong className="text-[#45464d] min-w-[50px]">Mersis:</strong>
+                  <span>0123456789000001 (Örnek)</span>
+                </li>
+              </ul>
+            </div>
           </div>
-          <div className="md:col-span-3 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <span className="text-sm text-[#45464d]">© {new Date().getFullYear()} CVio. Tüm Hakları Saklıdır.</span>
-            <nav className="flex flex-wrap gap-4 md:gap-6">
-              <a href="#" className="text-sm text-[#76777d] hover:text-[#4648d4] transition-colors">Gizlilik Politikası</a>
-              <a href="#" className="text-sm text-[#76777d] hover:text-[#4648d4] transition-colors">Kullanım Koşulları</a>
-              <a href="mailto:support@cvio.app" className="text-sm text-[#76777d] hover:text-[#4648d4] transition-colors">İletişim</a>
-            </nav>
+          
+          <div className="pt-8 border-t border-[#c6c6cd]/30 flex flex-col md:flex-row justify-between items-center gap-4">
+            <span className="text-sm text-[#45464d]">© {new Date().getFullYear()} CVio Yazılım Teknolojileri A.Ş. Tüm Hakları Saklıdır.</span>
+            <div className="flex gap-4 opacity-50 grayscale">
+              <span className="font-bold text-lg tracking-tighter">iyzico</span>
+              <span className="font-bold text-lg italic">VISA</span>
+              <span className="font-bold text-lg">MasterCard</span>
+            </div>
           </div>
         </div>
       </footer>
