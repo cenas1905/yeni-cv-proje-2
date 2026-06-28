@@ -1,0 +1,16 @@
+{
+  "name": "CVio - AI Destekli CV Oluşturucu",
+  "short_name": "CVio",
+  "description": "Yapay zeka ile 60 saniyede profesyonel CV oluşturun.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8f9ff",
+  "theme_color": "#0051d5",
+  "icons": [
+    {
+      "src": "/icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

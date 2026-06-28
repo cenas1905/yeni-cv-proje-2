@@ -20,6 +20,13 @@ export const metadata: Metadata = {
     "Yapay zeka ile 60 saniyede profesyonel CV oluşturun. ATS uyumlu şablonlar, AI kariyer koçu ve paylaşılabilir link özelliği.",
   keywords: ["cv oluşturucu", "özgeçmiş", "ai cv", "akıllı cv", "kariyer"],
   authors: [{ name: "CVio" }],
+  manifest: "/manifest.json",
+  applicationName: "CVio",
+  appleWebApp: {
+    title: "CVio",
+    capable: true,
+    statusBarStyle: "default",
+  },
   icons: {
     icon: "/favicon.ico",
     shortcut: "/favicon.ico",
