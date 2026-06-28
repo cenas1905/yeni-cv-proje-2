@@ -8,7 +8,11 @@ export async function createClient() {
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!url || !key || url.trim() === '' || key.trim() === '') {
-    console.warn('[CVio Server Client] Supabase yapılandırılmamış. Server mock mod aktif.');
+    const glob = globalThis as any;
+    if (!glob.__supabaseServerMockWarned) {
+      console.warn('[CVio Server Client] Supabase yapılandırılmamış. Server mock mod aktif.');
+      glob.__supabaseServerMockWarned = true;
+    }
     return createMockSupabaseClient() as any;
   }
 

@@ -24,9 +24,7 @@ export default function PublicJobsPage() {
         .order('created_at', { ascending: false });
       
       setJobs(data || []);
-      
-      // Fetch initial external jobs
-      fetchExternalJobs('Genel Başvuru', 'Turkey');
+      setLoading(false);
     }
     fetchLocalJobs();
   }, [supabase]);
