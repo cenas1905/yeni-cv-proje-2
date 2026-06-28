@@ -37,7 +37,10 @@ export async function POST(req: Request) {
       mode: 'subscription',
       payment_method_types: ['card'],
       line_items: [{ price: targetPriceId, quantity: 1 }],
-      metadata: { userId },
+      metadata: { userId, planType: planType || 'pro' },
+      subscription_data: {
+        metadata: { userId, planType: planType || 'pro' }
+      },
       success_url: `${baseUrl}/dashboard?upgraded=true`,
       cancel_url: returnUrl || `${baseUrl}/upgrade`
     });

@@ -29,11 +29,12 @@ export async function POST(req: Request) {
   ) {
     const sub = event.data.object as any;
     const userId = sub.metadata?.userId;
+    const planType = sub.metadata?.planType || 'pro';
     
     if (userId) {
-      // 1. Update Profile Plan to Pro and set expiration timestamp
+      // 1. Update Profile Plan and set expiration timestamp
       await supabaseAdmin.from('profiles').update({
-        plan: 'pro',
+        plan: planType,
         plan_expires_at: new Date(sub.current_period_end * 1000).toISOString(),
         stripe_customer_id: sub.customer as string
       }).eq('id', userId);
@@ -47,7 +48,7 @@ export async function POST(req: Request) {
       await supabaseAdmin.from('subscriptions').upsert({
         user_id: userId,
         stripe_subscription_id: sub.id,
-        plan: 'pro',
+        plan: planType,
         status: sub.status,
         current_period_end: new Date(sub.current_period_end * 1000).toISOString()
       }, { onConflict: 'stripe_subscription_id' });
