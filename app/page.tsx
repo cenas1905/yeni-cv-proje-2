@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import {
   ArrowRight, Check, Star, Zap, ChevronDown,
   Link2, Sparkles, Share2, BarChart2, Shield, Users,
-  CheckCircle2, TrendingUp, Play
+  CheckCircle2, TrendingUp, Play, Lock
 } from 'lucide-react';
 
 /* ─── Pricing data ─── */
@@ -420,10 +420,30 @@ export default function HomePage() {
             ))}
           </div>
 
-          <p className="text-center text-[#76777d] text-xs mt-8 flex items-center justify-center gap-2">
-            <Shield className="w-4 h-4 text-[#009485]" />
-            14 gün koşulsuz para iade garantisi · SSL Güvenli Altyapı
-          </p>
+          <div className="mt-12 flex flex-col items-center gap-6">
+            <div className="flex items-center gap-2 text-[#009485] bg-[#009485]/10 px-4 py-2 rounded-full text-sm font-semibold">
+              <Shield className="w-4 h-4" />
+              <span>14 Gün Koşulsuz Para İade Garantisi</span>
+            </div>
+            
+            <div className="text-center">
+              <p className="text-[#76777d] text-xs mb-3 font-medium uppercase tracking-wider">
+                Güvenli Ödeme Altyapısı
+              </p>
+              <div className="flex items-center justify-center gap-4 opacity-60 grayscale hover:grayscale-0 transition-all cursor-default">
+                <span className="font-bold text-[#191c1e] tracking-tighter text-xl">iyzico</span>
+                <div className="w-1 h-1 rounded-full bg-[#c6c6cd]"></div>
+                <span className="font-bold text-[#191c1e] text-xl italic tracking-wider">VISA</span>
+                <div className="w-1 h-1 rounded-full bg-[#c6c6cd]"></div>
+                <span className="font-bold text-[#191c1e] text-xl tracking-tighter">MasterCard</span>
+                <div className="w-1 h-1 rounded-full bg-[#c6c6cd]"></div>
+                <div className="flex items-center gap-1 font-bold text-[#191c1e] text-lg">
+                   <Lock className="w-4 h-4" /> SSL
+                </div>
+              </div>
+              <p className="text-[#76777d] text-[10.5px] mt-3">Tüm ödemeleriniz 256-bit uçtan uca şifreleme ile korunmaktadır.</p>
+            </div>
+          </div>
         </div>
       </section>
 
