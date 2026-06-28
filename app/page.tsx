@@ -14,7 +14,7 @@ const plans = [
   {
     name: 'Ücretsiz',
     price: '₺0',
-    period: '/sonsuza kadar',
+    period: '/ 14 gün boyunca',
     desc: 'Başlamak için mükemmel',
     features: [
       'Sınırsız CV taslağı',
