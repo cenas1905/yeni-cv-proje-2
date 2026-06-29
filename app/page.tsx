@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import {
   ArrowRight, Check, Star, Zap, ChevronDown,
   Link2, Sparkles, Share2, BarChart2, Shield, Users,
-  CheckCircle2, TrendingUp, Play, Lock
+  CheckCircle2, TrendingUp, Play, Lock, Brain
 } from 'lucide-react';
 
 /* ─── Pricing data ─── */
@@ -139,12 +139,12 @@ export default function HomePage() {
       <header className="sticky top-0 z-50 bg-[#f7f9fb]/90 backdrop-blur-md border-b border-[#c6c6cd]/30 shadow-sm transition-all duration-300">
         <div className="max-w-[1280px] mx-auto px-6 md:px-16">
           <div className="flex justify-between items-center h-20">
-            {/* Logo */}
-            <Link href="/" className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-[#4648d4]">
-                <span className="text-white font-black text-sm">C</span>
+            {/* Premium Logo */}
+            <Link href="/" className="flex items-center gap-3 group">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-tr from-[#4648d4] via-[#5c5ee6] to-[#009485] shadow-lg shadow-[#4648d4]/30 border border-white/20 group-hover:scale-105 transition-transform">
+                <Brain className="text-white w-5 h-5" />
               </div>
-              <span className="font-black text-xl tracking-tight text-[#191c1e]">CV<span className="text-[#4648d4]">io</span></span>
+              <span className="font-black text-2xl tracking-tighter text-[#191c1e]">cvio<span className="text-[#4648d4]">.</span></span>
             </Link>
 
             {/* Nav */}
@@ -550,11 +550,11 @@ export default function HomePage() {
         <div className="max-w-[1280px] mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
             <div className="md:col-span-1">
-              <div className="flex items-center gap-2 mb-6">
-                <div className="w-8 h-8 rounded-lg bg-[#4648d4] flex items-center justify-center">
-                  <span className="text-white font-black text-sm">C</span>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-tr from-[#4648d4] via-[#5c5ee6] to-[#009485] shadow-lg shadow-[#4648d4]/30 border border-white/20">
+                  <Brain className="text-white w-5 h-5" />
                 </div>
-                <span className="font-black text-xl text-[#191c1e]">CV<span className="text-[#4648d4]">io</span></span>
+                <span className="font-black text-2xl tracking-tighter text-[#191c1e]">cvio<span className="text-[#4648d4]">.</span></span>
               </div>
               <p className="text-xs text-[#76777d] leading-relaxed mb-6">
                 Türkiye'nin en güvenilir, yapay zeka destekli CV ve kariyer platformu. Verileriniz KVKK ve GDPR kapsamında korunmaktadır.
