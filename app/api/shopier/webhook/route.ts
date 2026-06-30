@@ -4,14 +4,28 @@ import { getDb } from '@/lib/supabase-server';
 
 export async function POST(request: Request) {
   try {
-    const formData = await request.formData();
-    const data = Object.fromEntries(formData.entries());
+    let data: any = {};
+    
+    // Safely parse body
+    try {
+      const contentType = request.headers.get('content-type') || '';
+      if (contentType.includes('application/json')) {
+        data = await request.json();
+      } else if (contentType.includes('form-urlencoded') || contentType.includes('multipart/form-data')) {
+        const formData = await request.formData();
+        data = Object.fromEntries(formData.entries());
+      } else {
+        const text = await request.text();
+        console.log('Shopier webhook raw text:', text);
+      }
+    } catch (e) {
+      console.log('Could not parse webhook body', e);
+    }
 
     console.log('Shopier OSB Webhook Received:', data);
 
-    // If it's a test request from Shopier, just return 200 OK
-    // Shopier OSB Test usually sends a random order ID or specific status
-    if (data.status !== 'success' || data.platform_order_id === 'test') {
+    // If it's an OSB test from Shopier, always return 200 OK immediately
+    if (data.status !== 'success' || data.platform_order_id === 'test' || Object.keys(data).length === 0) {
       return new NextResponse('OK - Test received', { status: 200 });
     }
 
@@ -22,11 +36,13 @@ export async function POST(request: Request) {
     }
 
     const orderId = data.platform_order_id as string;
-    const parts = orderId.split('_');
-    const userId = parts[2];
+    const parts = orderId?.split('_') || [];
+    const userId = parts.length >= 3 ? parts[2] : null;
 
     if (!userId) {
-      return new NextResponse('Invalid order ID format', { status: 400 });
+      // Return 200 even on invalid format so Shopier doesn't retry infinitely
+      console.error('Invalid order ID format:', orderId);
+      return new NextResponse('OK', { status: 200 });
     }
 
     const db = await getDb();
@@ -50,4 +66,10 @@ export async function POST(request: Request) {
     console.error('Shopier webhook error:', error);
     return new NextResponse('Internal Error', { status: 500 });
   }
+}
+
+// Shopier might send a GET request for testing? Just in case:
+export async function GET(request: Request) {
+  console.log('Shopier OSB GET Test Received');
+  return new NextResponse('OK', { status: 200 });
 }
