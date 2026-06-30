@@ -26,7 +26,7 @@ export async function POST(request: Request) {
 
     // If it's an OSB test from Shopier, always return 200 OK immediately
     if (data.status !== 'success' || data.platform_order_id === 'test' || Object.keys(data).length === 0) {
-      return new NextResponse('OK - Test received', { status: 200 });
+      return new NextResponse('OK', { status: 200 });
     }
 
     const isValid = verifyShopierCallback(data);
