@@ -32,6 +32,11 @@ export async function POST(request: Request) {
       // New format
       const resString = data.res;
       const hash = data.hash;
+      const decodedRes = JSON.parse(Buffer.from(resString, 'base64').toString('utf8'));
+      orderId = decodedRes.orderid;
+      if (decodedRes.istest === 1) {
+        return new NextResponse('OK', { status: 200 });
+      }
 
       const expectedHash = require('crypto')
         .createHmac('sha256', process.env.SHOPIER_API_SECRET || '')
@@ -42,10 +47,6 @@ export async function POST(request: Request) {
         console.error('Shopier new webhook signature invalid');
         return new NextResponse('Invalid signature', { status: 400 });
       }
-
-      const decodedRes = JSON.parse(Buffer.from(resString, 'base64').toString('utf8'));
-      orderId = decodedRes.orderid;
-      if (decodedRes.istest === 1) isTest = true;
       
     } else {
       // Old format
