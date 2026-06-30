@@ -40,7 +40,7 @@ export async function POST(request: Request) {
       }
     };
 
-    const returnUrl = `${baseUrl}/api/shopier/callback`;
+    const returnUrl = `${baseUrl}/dashboard?payment=success`;
     const formHtml = generateShopierForm(paymentData, returnUrl);
 
     // Return the HTML directly so the frontend can inject it or we return a URL to a form renderer
