@@ -65,7 +65,13 @@ function UpgradeContent() {
     setLoading(true);
     try {
       const provider = config.paymentProvider || 'iyzico';
-      const res = await fetch(`/api/${provider}/create-checkout`, {
+      const endpoint = provider === 'shopier' 
+        ? '/api/shopier/create-checkout'
+        : provider === 'stripe'
+          ? '/api/stripe/create-checkout'
+          : '/api/iyzico/create-checkout';
+
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
@@ -74,9 +80,22 @@ function UpgradeContent() {
           returnUrl: window.location.origin + '/upgrade' 
         })
       });
-      const data = await res.json();
-      if (data.url) window.location.href = data.url;
-    } catch {
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Ödeme başlatılamadı');
+      }
+
+      if (data.url) {
+        window.location.href = data.url;
+      } else if (data.html) {
+        const newWindow = document.open();
+        newWindow.write(data.html);
+        newWindow.close();
+      }
+    } catch (err) {
+      console.error(err);
       alert('Ödeme başlatılamadı, lütfen tekrar deneyin.');
     } finally {
       setLoading(false);

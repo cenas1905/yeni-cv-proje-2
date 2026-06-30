@@ -437,7 +437,7 @@ export default function HomePage() {
                 Güvenli Ödeme Altyapısı
               </p>
               <div className="flex items-center justify-center gap-4 opacity-60 grayscale hover:grayscale-0 transition-all cursor-default">
-                <span className="font-bold text-[#191c1e] tracking-tighter text-xl">iyzico</span>
+                <span className="font-bold text-[#191c1e] tracking-tighter text-xl">Shopier</span>
                 <div className="w-1 h-1 rounded-full bg-[#c6c6cd]"></div>
                 <span className="font-bold text-[#191c1e] text-xl italic tracking-wider">VISA</span>
                 <div className="w-1 h-1 rounded-full bg-[#c6c6cd]"></div>
@@ -606,7 +606,7 @@ export default function HomePage() {
           <div className="pt-8 border-t border-[#c6c6cd]/30 flex flex-col md:flex-row justify-between items-center gap-4">
             <span className="text-sm text-[#45464d]">© {new Date().getFullYear()} CVio Yazılım Teknolojileri A.Ş. Tüm Hakları Saklıdır.</span>
             <div className="flex gap-4 opacity-50 grayscale">
-              <span className="font-bold text-lg tracking-tighter">iyzico</span>
+              <span className="font-bold text-lg tracking-tighter">Shopier</span>
               <span className="font-bold text-lg italic">VISA</span>
               <span className="font-bold text-lg">MasterCard</span>
             </div>
