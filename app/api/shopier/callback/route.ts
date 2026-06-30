@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { verifyShopierCallback } from '@/lib/shopier';
-import { getDb } from '@/lib/supabase-server';
+import { createClient } from '@/lib/supabase-server';
 import { config } from '@/lib/config';
 
 export async function POST(request: Request) {
@@ -27,7 +27,7 @@ export async function POST(request: Request) {
       return NextResponse.redirect(`${config.appUrl}/dashboard?payment=error`);
     }
 
-    const db = await getDb();
+    const db = await createClient();
     const { error: updateError } = await db
       .from('users')
       .update({ 

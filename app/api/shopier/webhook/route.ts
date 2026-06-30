@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { verifyShopierCallback } from '@/lib/shopier';
-import { getDb } from '@/lib/supabase-server';
+import { createClient } from '@/lib/supabase-server';
 
 export async function POST(request: Request) {
   try {
@@ -45,7 +45,7 @@ export async function POST(request: Request) {
       return new NextResponse('OK', { status: 200 });
     }
 
-    const db = await getDb();
+    const db = await createClient();
     const { error: updateError } = await db
       .from('users')
       .update({ 
