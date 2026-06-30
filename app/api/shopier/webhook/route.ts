@@ -24,23 +24,52 @@ export async function POST(request: Request) {
 
     console.log('Shopier OSB Webhook Received:', data);
 
-    // If it's an OSB test from Shopier, always return 200 OK immediately
-    if (data.status !== 'success' || data.platform_order_id === 'test' || Object.keys(data).length === 0) {
+    // Parse Shopier new webhook format (res & hash)
+    let orderId = '';
+    let isTest = false;
+
+    if (data.res && data.hash) {
+      // New format
+      const resString = data.res;
+      const hash = data.hash;
+
+      const expectedHash = require('crypto')
+        .createHmac('sha256', process.env.SHOPIER_API_SECRET || '')
+        .update(resString)
+        .digest('hex');
+
+      if (hash !== expectedHash && hash !== expectedHash.toUpperCase()) {
+        console.error('Shopier new webhook signature invalid');
+        return new NextResponse('Invalid signature', { status: 400 });
+      }
+
+      const decodedRes = JSON.parse(Buffer.from(resString, 'base64').toString('utf8'));
+      orderId = decodedRes.orderid;
+      if (decodedRes.istest === 1) isTest = true;
+      
+    } else {
+      // Old format
+      if (data.status !== 'success' || data.platform_order_id === 'test' || Object.keys(data).length === 0) {
+        return new NextResponse('OK', { status: 200 });
+      }
+
+      const isValid = verifyShopierCallback(data);
+      if (!isValid) {
+        console.error('Shopier webhook signature invalid');
+        return new NextResponse('Invalid signature', { status: 400 });
+      }
+      orderId = data.platform_order_id as string;
+    }
+
+    if (isTest || orderId === 'test' || !orderId.includes('_')) {
+      // It's a test or manual order, don't update DB
       return new NextResponse('OK', { status: 200 });
     }
 
-    const isValid = verifyShopierCallback(data);
-    if (!isValid) {
-      console.error('Shopier webhook signature invalid');
-      return new NextResponse('Invalid signature', { status: 400 });
-    }
-
-    const orderId = data.platform_order_id as string;
-    const parts = orderId?.split('_') || [];
+    const parts = orderId.split('_');
     const userId = parts.length >= 3 ? parts[2] : null;
 
     if (!userId) {
-      // Return 200 even on invalid format so Shopier doesn't retry infinitely
       console.error('Invalid order ID format:', orderId);
       return new NextResponse('OK', { status: 200 });
     }
@@ -50,8 +79,8 @@ export async function POST(request: Request) {
       .from('users')
       .update({ 
         role: 'PRO',
-        stripe_customer_id: 'shopier_' + data.payment_id,
-        stripe_subscription_id: 'shopier_' + data.payment_id
+        stripe_customer_id: 'shopier_webhook',
+        stripe_subscription_id: 'shopier_webhook'
       })
       .eq('id', userId);
 
