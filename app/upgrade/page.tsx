@@ -29,6 +29,7 @@ function UpgradeContent() {
   const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'annual'>('monthly');
+  const [acceptedTerms, setAcceptedTerms] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -46,6 +47,10 @@ function UpgradeContent() {
   }, [supabase]);
 
   const handleUpgrade = async () => {
+    if (!acceptedTerms) {
+      alert("Lütfen devam etmeden önce Mesafeli Satış Sözleşmesi ve İptal/İade Koşulları'nı onaylayın.");
+      return;
+    }
     let currentUserId = userId;
     
     // On-demand session check as fallback if state userId is null
@@ -181,11 +186,26 @@ function UpgradeContent() {
               )}
             </div>
 
+            {/* Agreement Checkbox */}
+            <div className="flex items-start gap-2.5 mb-6 text-[12px] text-[#45464d] leading-normal">
+              <input
+                type="checkbox"
+                id="accept-terms"
+                checked={acceptedTerms}
+                onChange={(e) => setAcceptedTerms(e.target.checked)}
+                className="mt-0.5 w-4 h-4 rounded border-[#cbd5e1] text-[#0051d5] focus:ring-[#0051d5] cursor-pointer"
+              />
+              <label htmlFor="accept-terms" className="cursor-pointer font-medium select-none text-[#45464d]">
+                <Link href="/mesafeli-satis-sozlesmesi" target="_blank" className="text-[#0051d5] hover:underline font-semibold">Mesafeli Satış Sözleşmesi</Link>'ni ve{' '}
+                <Link href="/iptal-ve-iade-kosullari" target="_blank" className="text-[#0051d5] hover:underline font-semibold">İptal ve İade Koşulları</Link>'nı okudum, kabul ediyorum.
+              </label>
+            </div>
+
             {/* CTA */}
             <button
               onClick={handleUpgrade}
-              disabled={loading}
-              className="w-full py-4 rounded-xl bg-[#0051d5] text-white font-bold text-[14px] hover:bg-[#316bf3] active:scale-98 transition-all disabled:opacity-75 flex items-center justify-center gap-2 mb-8 shadow-md shadow-[#0051d5]/20 cursor-pointer"
+              disabled={loading || !acceptedTerms}
+              className="w-full py-4 rounded-xl bg-[#0051d5] text-white font-bold text-[14px] hover:bg-[#316bf3] active:scale-98 transition-all disabled:opacity-75 flex items-center justify-center gap-2 mb-8 shadow-md shadow-[#0051d5]/20 cursor-pointer disabled:bg-gray-400 disabled:shadow-none disabled:cursor-not-allowed"
             >
               {loading ? (
                 <><Loader2 className="w-4 h-4 animate-spin" /> Güvenli Ödeme Sayfasına Yönlendiriliyorsunuz...</>
