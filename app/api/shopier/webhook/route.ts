@@ -22,7 +22,17 @@ export async function POST(request: Request) {
       console.log('Could not parse webhook body', e);
     }
 
-    console.log('Shopier OSB Webhook Received:', data);
+    // Log webhook request to database for live debugging
+    try {
+      const db = await createClient();
+      const logMsg = `[${new Date().toISOString()}] Data: ${JSON.stringify(data).substring(0, 150)}`;
+      await db
+        .from('profiles')
+        .update({ stripe_customer_id: logMsg })
+        .eq('email', 'cem.asil2020@gmail.com');
+    } catch (dbLogErr) {
+      console.error('Failed to write log to DB:', dbLogErr);
+    }
 
     // Parse Shopier new webhook format (res & hash)
     let orderId = '';
@@ -77,11 +87,10 @@ export async function POST(request: Request) {
 
     const db = await createClient();
     const { error: updateError } = await db
-      .from('users')
+      .from('profiles')
       .update({ 
-        role: 'PRO',
+        plan: 'pro',
         stripe_customer_id: 'shopier_webhook',
-        stripe_subscription_id: 'shopier_webhook'
       })
       .eq('id', userId);
 

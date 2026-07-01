@@ -29,11 +29,10 @@ export async function POST(request: Request) {
 
     const db = await createClient();
     const { error: updateError } = await db
-      .from('users')
+      .from('profiles')
       .update({ 
-        role: 'PRO',
-        stripe_customer_id: 'shopier_' + data.payment_id,
-        stripe_subscription_id: 'shopier_' + data.payment_id
+        plan: 'pro',
+        stripe_customer_id: 'shopier_' + data.payment_id
       })
       .eq('id', userId);
 
