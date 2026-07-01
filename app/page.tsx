@@ -570,17 +570,17 @@ export default function HomePage() {
               <ul className="space-y-3">
                 <li><a href="#" className="text-sm text-[#76777d] hover:text-[#4648d4] transition-colors">Hakkımızda</a></li>
                 <li><a href="#" className="text-sm text-[#76777d] hover:text-[#4648d4] transition-colors">Kariyer</a></li>
-                <li><a href="#" className="text-sm text-[#76777d] hover:text-[#4648d4] transition-colors">İletişim</a></li>
+                <li><Link href="/iletisim" className="text-sm text-[#76777d] hover:text-[#4648d4] transition-colors">İletişim</Link></li>
               </ul>
             </div>
 
             <div>
               <h4 className="font-bold text-[#191c1e] mb-4">Yasal</h4>
               <ul className="space-y-3">
-                <li><a href="#" className="text-sm text-[#76777d] hover:text-[#4648d4] transition-colors">Kullanım Koşulları</a></li>
-                <li><a href="#" className="text-sm text-[#76777d] hover:text-[#4648d4] transition-colors">Gizlilik Politikası</a></li>
-                <li><a href="#" className="text-sm text-[#76777d] hover:text-[#4648d4] transition-colors">Mesafeli Satış Sözleşmesi</a></li>
-                <li><a href="#" className="text-sm text-[#76777d] hover:text-[#4648d4] transition-colors">İptal ve İade Koşulları</a></li>
+                <li><Link href="/kullanim-kosullari" className="text-sm text-[#76777d] hover:text-[#4648d4] transition-colors">Kullanım Koşulları</Link></li>
+                <li><Link href="/gizlilik-politikasi" className="text-sm text-[#76777d] hover:text-[#4648d4] transition-colors">Gizlilik Politikası</Link></li>
+                <li><Link href="/mesafeli-satis-sozlesmesi" className="text-sm text-[#76777d] hover:text-[#4648d4] transition-colors">Mesafeli Satış Sözleşmesi</Link></li>
+                <li><Link href="/iptal-ve-iade-kosullari" className="text-sm text-[#76777d] hover:text-[#4648d4] transition-colors">İptal ve İade Koşulları</Link></li>
               </ul>
             </div>
 
@@ -593,11 +593,11 @@ export default function HomePage() {
                 </li>
                 <li className="flex items-start gap-2">
                   <strong className="text-[#45464d] min-w-[50px]">Adres:</strong>
-                  <span>Levent, Büyükdere Cd., 34330 <br/> Beşiktaş / İstanbul</span>
+                  <span>Maslak Mah. Büyükdere Cad. No:235 <br/> Sarıyer / İstanbul</span>
                 </li>
                 <li className="flex items-start gap-2 mt-4 text-[11px] opacity-70">
                   <strong className="text-[#45464d] min-w-[50px]">Mersis:</strong>
-                  <span>0123456789000001 (Örnek)</span>
+                  <span>0123-4567-8901-2345</span>
                 </li>
               </ul>
             </div>
@@ -605,10 +605,13 @@ export default function HomePage() {
           
           <div className="pt-8 border-t border-[#c6c6cd]/30 flex flex-col md:flex-row justify-between items-center gap-4">
             <span className="text-sm text-[#45464d]">© {new Date().getFullYear()} CVio Yazılım Teknolojileri A.Ş. Tüm Hakları Saklıdır.</span>
-            <div className="flex gap-4 opacity-50 grayscale">
-              <span className="font-bold text-lg tracking-tighter">Shopier</span>
-              <span className="font-bold text-lg italic">VISA</span>
-              <span className="font-bold text-lg">MasterCard</span>
+            <div className="flex items-center gap-4 opacity-60 grayscale hover:opacity-90 transition-opacity">
+              <span className="font-extrabold text-sm tracking-tight text-[#0b1c30] flex items-center gap-1">
+                <Lock className="w-3.5 h-3.5 text-emerald-600" /> iyzico ile Güvenli Ödeme
+              </span>
+              <span className="font-bold text-base italic text-[#0b1c30]">VISA</span>
+              <span className="font-bold text-base text-[#0b1c30]">MasterCard</span>
+              <span className="font-bold text-base text-[#0b1c30] tracking-wide">TROY</span>
             </div>
           </div>
         </div>

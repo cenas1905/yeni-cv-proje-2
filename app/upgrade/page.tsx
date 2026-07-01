@@ -4,7 +4,7 @@ import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createClientComponentClient } from '@/lib/supabase-client';
-import { Check, ArrowLeft, Loader2, Shield, Zap, AlertTriangle } from 'lucide-react';
+import { Check, ArrowLeft, Loader2, Shield, Zap, AlertTriangle, Lock } from 'lucide-react';
 import { config } from '@/lib/config';
 
 const proFeatures = [
@@ -225,7 +225,7 @@ function UpgradeContent() {
         </div>
 
         {/* Compare Table */}
-        <div className="max-w-lg mx-auto">
+        <div className="max-w-lg mx-auto mb-12">
           <div className="rounded-xl border border-[#c6c6cd] bg-white overflow-hidden shadow-sm">
             <table className="w-full text-[13px]">
               <thead>
@@ -253,6 +253,26 @@ function UpgradeContent() {
               </tbody>
             </table>
           </div>
+        </div>
+
+        {/* Footer */}
+        <div className="mt-16 pt-8 border-t border-[#c6c6cd]/30 flex flex-col items-center gap-4 text-center">
+          <div className="flex items-center gap-4 opacity-60 grayscale hover:opacity-90 transition-opacity">
+            <span className="font-extrabold text-sm tracking-tight text-[#0b1c30] flex items-center gap-1">
+              <Lock className="w-3.5 h-3.5 text-emerald-600" /> iyzico ile Güvenli Ödeme
+            </span>
+            <span className="font-bold text-sm italic text-[#0b1c30]">VISA</span>
+            <span className="font-bold text-sm text-[#0b1c30]">MasterCard</span>
+            <span className="font-bold text-sm text-[#0b1c30] tracking-wide">TROY</span>
+          </div>
+          <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-[11px] text-[#76777d] font-semibold">
+            <Link href="/kullanim-kosullari" className="hover:text-[#0051d5] transition-colors">Kullanım Koşulları</Link>
+            <Link href="/gizlilik-politikasi" className="hover:text-[#0051d5] transition-colors">Gizlilik Politikası</Link>
+            <Link href="/mesafeli-satis-sozlesmesi" className="hover:text-[#0051d5] transition-colors">Mesafeli Satış Sözleşmesi</Link>
+            <Link href="/iptal-ve-iade-kosullari" className="hover:text-[#0051d5] transition-colors">İptal ve İade Koşulları</Link>
+            <Link href="/iletisim" className="hover:text-[#0051d5] transition-colors">İletişim</Link>
+          </div>
+          <span className="text-[11px] text-[#76777d] mt-2">© {new Date().getFullYear()} CVio Yazılım Teknolojileri A.Ş. Tüm Hakları Saklıdır.</span>
         </div>
 
       </div>
