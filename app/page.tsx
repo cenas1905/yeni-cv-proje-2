@@ -114,8 +114,6 @@ const steps = [
 const faqs = [
   { q: 'LinkedIn import nasıl çalışır?', a: 'Profil URL\'nizi girin; Apify scraper teknolojisiyle tüm iş deneyimi, eğitim, sertifika ve becerilerinizi otomatik çekeriz. Gizliliğiniz korunur.' },
   { q: 'AI optimizasyon gerçekten fark yaratıyor mu?', a: 'Evet. Claude modelimiz CV\'nizi ATS kriterlerine göre analiz eder, başarıları ölçülebilir hale getirir. Kullanıcılarımızın %94\'ü mülakat daveti almaktadır.' },
-  { q: 'Fiyatlar TL mi?', a: 'Evet, tüm fiyatlar Türk Lirası cinsindendir. Kredi/banka kartı ve havale ile ödeme yapabilirsiniz.' },
-  { q: 'İptal edersem ne olur?', a: 'İstediğiniz zaman iptal edebilirsiniz. İptal sonrası abonelik süreniz bitene kadar Pro özelliklerine erişim devam eder.' },
 ];
 
 export default function HomePage() {
@@ -152,7 +150,6 @@ export default function HomePage() {
               <Link href="/jobs" className="text-[#45464d] hover:text-[#4648d4] font-medium text-sm transition-colors">İş İlanları</Link>
               <a href="#features" onClick={(e) => handleScroll(e, 'features')} className="text-[#45464d] hover:text-[#4648d4] font-medium text-sm transition-colors">Özellikler</a>
               <a href="#nasil-calisir" onClick={(e) => handleScroll(e, 'nasil-calisir')} className="text-[#45464d] hover:text-[#4648d4] font-medium text-sm transition-colors">Nasıl Çalışır?</a>
-              <a href="#pricing" onClick={(e) => handleScroll(e, 'pricing')} className="text-[#45464d] hover:text-[#4648d4] font-medium text-sm transition-colors">Fiyatlar</a>
               <Link href="/login" className="text-[#45464d] hover:text-[#4648d4] font-medium text-sm transition-colors">Giriş Yap</Link>
             </nav>
 
@@ -225,7 +222,7 @@ export default function HomePage() {
                 CV'ye Dönüştür
               </button>
             </form>
-            <p className="text-xs text-white/60 mt-3 drop-shadow-sm">Kredi kartı gerekmez · Ücretsiz deneme</p>
+            <p className="text-xs text-white/60 mt-3 drop-shadow-sm">Kredi kartı gerekmez</p>
           </motion.div>
 
           {/* Right: Floating CV mockup */}
@@ -355,103 +352,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ─── PRICING ─── */}
-      <section id="pricing" className="py-24 px-6 md:px-16 bg-[#f2f4f6]">
-        <div className="max-w-[1280px] mx-auto">
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#4648d4]/10 text-[#4648d4] mb-4">
-              <span className="text-xs font-bold uppercase tracking-wider">Fiyatlandırma</span>
-            </div>
-            <h2 className="text-3xl sm:text-4xl font-black text-[#191c1e] tracking-tight mb-4">
-              Bir Sonraki Hamlenize Yatırım Yapın
-            </h2>
-            <p className="text-[#45464d] text-base">Şeffaf fiyatlandırma. Gizli ücret yok. İstediğiniz zaman iptal.</p>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-            {plans.map((plan, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-                className={`bg-white p-8 rounded-2xl flex flex-col h-full relative ${
-                  plan.popular
-                    ? 'border-2 border-[#4648d4] shadow-lg shadow-[#4648d4]/10'
-                    : 'border border-[#c6c6cd]/30 shadow-sm'
-                }`}
-              >
-                {plan.popular && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#4648d4] text-white text-xs font-black px-4 py-1 rounded-full uppercase tracking-wider">
-                    En Popüler ⚡
-                  </div>
-                )}
-
-                <div className="mb-8">
-                  <h3 className="text-xl font-bold text-[#191c1e] mb-1">{plan.name}</h3>
-                  <p className="text-sm text-[#76777d]">{plan.desc}</p>
-                </div>
-
-                <div className="mb-8">
-                  <span className="text-5xl font-black text-[#191c1e]">{plan.price}</span>
-                  <span className="text-sm text-[#76777d] ml-1">{plan.period}</span>
-                </div>
-
-                <ul className="space-y-3 mb-8 flex-1">
-                  {plan.features.map((f, idx) => (
-                    <li key={idx} className="flex items-start gap-3 text-sm text-[#191c1e]">
-                      <Check className="w-4 h-4 text-[#4648d4] shrink-0 mt-0.5" />
-                      {f}
-                    </li>
-                  ))}
-                  {plan.locked.map((f, idx) => (
-                    <li key={idx} className="flex items-start gap-3 text-sm text-[#c6c6cd] line-through">
-                      <Check className="w-4 h-4 text-[#c6c6cd] shrink-0 mt-0.5" />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-
-                <Link href="/register">
-                  <button className={`w-full py-3.5 rounded-xl font-bold text-sm transition-all ${
-                    plan.popular
-                      ? 'bg-[#4648d4] hover:bg-[#4648d4]/90 text-white shadow-md shadow-[#4648d4]/20'
-                      : 'border-2 border-[#c6c6cd]/50 text-[#191c1e] hover:bg-[#f2f4f6]'
-                  }`}>
-                    {plan.cta}
-                  </button>
-                </Link>
-              </motion.div>
-            ))}
-          </div>
-
-          <div className="mt-12 flex flex-col items-center gap-6">
-            <div className="flex items-center gap-2 text-[#009485] bg-[#009485]/10 px-4 py-2 rounded-full text-sm font-semibold">
-              <Shield className="w-4 h-4" />
-              <span>14 Gün Koşulsuz Para İade Garantisi</span>
-            </div>
-            
-            <div className="text-center">
-              <p className="text-[#76777d] text-xs mb-3 font-medium uppercase tracking-wider">
-                Güvenli Ödeme Altyapısı
-              </p>
-              <div className="flex items-center justify-center gap-4 opacity-60 grayscale hover:grayscale-0 transition-all cursor-default">
-                <span className="font-bold text-[#191c1e] tracking-tighter text-xl">Shopier</span>
-                <div className="w-1 h-1 rounded-full bg-[#c6c6cd]"></div>
-                <span className="font-bold text-[#191c1e] text-xl italic tracking-wider">VISA</span>
-                <div className="w-1 h-1 rounded-full bg-[#c6c6cd]"></div>
-                <span className="font-bold text-[#191c1e] text-xl tracking-tighter">MasterCard</span>
-                <div className="w-1 h-1 rounded-full bg-[#c6c6cd]"></div>
-                <div className="flex items-center gap-1 font-bold text-[#191c1e] text-lg">
-                   <Lock className="w-4 h-4" /> SSL
-                </div>
-              </div>
-              <p className="text-[#76777d] text-[10.5px] mt-3">Tüm ödemeleriniz 256-bit uçtan uca şifreleme ile korunmaktadır.</p>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* ─── TESTIMONIALS ─── */}
       <section id="yorumlar" className="py-24 px-6 md:px-16 bg-white">
@@ -539,7 +440,7 @@ export default function HomePage() {
                   Ücretsiz Başla <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </div>
-              <p className="text-[11px] text-white/50">Kredi kartı gerekmez · Kolay kurulum · 7 gün ücretsiz</p>
+              <p className="text-[11px] text-white/50">Kredi kartı gerekmez · Kolay kurulum</p>
             </div>
           </div>
         </div>
